@@ -18,6 +18,42 @@ public class SortedLinkedList {
      * @param data The value to be inserted into the list.
      */
     public void insertSorted(int data) {
+        Node newNode = new Node(data, null);
+        Node curr = head;
+
+        boolean isStart = curr.data > newNode.data;
+        if(!isStart) {
+            //Iterate through list
+            //check next data if smaller
+            boolean found = false;
+            boolean isEnd = curr == null;
+            boolean finish = found || isEnd;
+
+            while(!finish) {
+                //Check if the next data point is greater than target
+                //else, move along pointer
+                boolean isSmall = curr.next.data > newNode.data;
+                if(isSmall) {
+                    //Temp storage of next Node
+                    Node tmp = curr.next;
+
+                    //Assign curr.next pointer to newNode
+                    //Assign newNode.next to temp storage
+                    curr.next = newNode;
+                    newNode.next = tmp;
+                    found = true;
+                } else {
+                    //Move pointer to next
+                    curr = curr.next;
+                }
+            }
+        } else {
+            //New Data belongs to start
+            //curr node == head
+            newNode.next = curr;
+            head = newNode;
+        }
+
     }
 
     /**
@@ -26,7 +62,25 @@ public class SortedLinkedList {
      * @return If the data was deleted.
      */
     public boolean delete(int data) {
-        return false;
+        Node curr = head;
+        boolean success = false;
+        boolean isEnd = curr == tail;
+        boolean finish = success || isEnd;
+
+        //Loop until finish condition
+        //cond: deleted or at end
+        while(!finish) {
+
+            //Check next data if target
+            //sets curr.next and assigns to targetNode.next
+            //'skips' target node
+            boolean found = curr.next.data = data;
+            if(found) {
+                curr.next = cur.next.next;
+                success = true;
+            }
+        }
+        return success;
     }
 
     /**
@@ -36,7 +90,21 @@ public class SortedLinkedList {
      * @return The int at the given index
      */
     public int get(int idx) {
-        throw new IndexOutOfBoundsException();
+        //Edge Case: negative indx
+        if(indx < 0 ) throw new IndexOutOfBoundsException();
+
+        Node curr = head;
+        boolean found = indx == 0;
+        boolean isBig = curr == null;
+        boolean finish = found || isBig;
+        while(!finish) {
+            curr = curr.next;
+            indx--;
+        }
+        //Edge Case: Big indx
+        if(isBig) throw new IndexOutOfBoundsException();
+
+        return curr.data;
     }
 
     /**
@@ -46,7 +114,26 @@ public class SortedLinkedList {
      * @return The data at the given index
      */
     public int search(int data) {
-        return -1;
+        //init target index
+        //assign curr pointer
+        int target = 0;
+        Node curr = head;
+        //boolean conditions
+        //cond: found data, end of list
+        boolean found = curr.data == data;
+        boolean isEnd = curr == null;
+        boolean finish = found || isEnd;
+
+        //Iterate through list while not found && not at end
+        while(!finish) {
+            curr = curr.next;
+            target++;
+        }
+        //Edge case: pointer is at end
+        if(isEnd) {
+            target = -1;
+        }
+        return target;
     }
 
     @Override
