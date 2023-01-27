@@ -26,7 +26,7 @@ public class SortedLinkedList {
             //Iterate through list
             //check next data if smaller
             boolean found = false;
-            boolean isEnd = curr == null;
+            boolean isEnd = curr == tail;
             boolean finish = found || isEnd;
 
             while(!finish) {
@@ -47,8 +47,13 @@ public class SortedLinkedList {
                     curr = curr.next;
                 }
             }
+            //Edge case: Insert at End
+            if(isEnd) {
+                curr.next = newNode;
+                tail = newNode;
+            }
         } else {
-            //New Data belongs to start
+            //Edge Case: Insert at beginning
             //curr node == head
             newNode.next = curr;
             head = newNode;
