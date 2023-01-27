@@ -21,6 +21,12 @@ public class SortedLinkedList {
         Node newNode = new Node(data, null);
         Node curr = head;
 
+        //Edge Case: empty list
+        if(curr == null) {
+            curr = newNode;
+            head = curr;
+            tail = curr;
+        }
         boolean isStart = curr.data > newNode.data;
         if(!isStart) {
             //Iterate through list
@@ -42,6 +48,7 @@ public class SortedLinkedList {
                     curr.next = newNode;
                     newNode.next = tmp;
                     found = true;
+                    break;
                 } else {
                     //Move pointer to next
                     curr = curr.next;
@@ -68,10 +75,17 @@ public class SortedLinkedList {
      */
     public boolean delete(int data) {
         Node curr = head;
+
         boolean success = false;
         boolean isEnd = curr == tail;
         boolean finish = success || isEnd;
 
+        //Edge Case: Beginning
+        boolean isBegin = curr.data == data;
+        if(isBegin) {
+            head = curr.next;
+            success = true;
+        }
         //Loop until finish condition
         //cond: deleted or at end
         while(!finish) {
@@ -79,11 +93,20 @@ public class SortedLinkedList {
             //Check next data if target
             //sets curr.next and assigns to targetNode.next
             //'skips' target node
-            boolean found = curr.next.data = data;
+            boolean found = curr.next.data == data;
             if(found) {
-                curr.next = cur.next.next;
+                if(curr.next == tail) {
+                    curr.next = null;
+                    tail = curr;
+                } else {
+                    curr.next = curr.next.next;
+                }
+
                 success = true;
             }
+            curr = curr.next;
+            isEnd = curr == tail;
+            finish = success || isEnd;
         }
         return success;
     }
@@ -96,18 +119,26 @@ public class SortedLinkedList {
      */
     public int get(int idx) {
         //Edge Case: negative indx
-        if(indx < 0 ) throw new IndexOutOfBoundsException();
+        if(idx < 0 ) {
+            throw new IndexOutOfBoundsException();
+        }
 
         Node curr = head;
-        boolean found = indx == 0;
+        boolean found = idx == 0;
         boolean isBig = curr == null;
         boolean finish = found || isBig;
         while(!finish) {
             curr = curr.next;
-            indx--;
+            idx--;
+
+            isBig = curr == null;
+            found = idx == 0;
+            finish = found || isBig;
         }
         //Edge Case: Big indx
-        if(isBig) throw new IndexOutOfBoundsException();
+        if(isBig) {
+            throw new IndexOutOfBoundsException();
+        }
 
         return curr.data;
     }
@@ -126,16 +157,20 @@ public class SortedLinkedList {
         //boolean conditions
         //cond: found data, end of list
         boolean found = curr.data == data;
-        boolean isEnd = curr == null;
+        boolean isEnd = curr == tail;
         boolean finish = found || isEnd;
 
         //Iterate through list while not found && not at end
         while(!finish) {
             curr = curr.next;
             target++;
+
+            found = curr.data == data;
+            isEnd = curr == tail;
+            finish = found || isEnd;
         }
         //Edge case: pointer is at end
-        if(isEnd) {
+        if(!found) {
             target = -1;
         }
         return target;
