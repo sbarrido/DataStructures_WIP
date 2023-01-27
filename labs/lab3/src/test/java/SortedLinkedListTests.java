@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class SortedLinkedListTests {
-
+    SortedLinkedList list = newSortedLinkedList();
     /*
     TODO: tests
     - Make sure you have 100% code coverage
@@ -14,4 +14,10 @@ public class SortedLinkedListTests {
     - Use JUnit (you will not receive points for testing if you do
       not use JUnit)
      */
+    @Test
+    void constructorTest() {
+        assertEquals(null, list.head);
+        assertEquals(null, list.tail);
+
+    }
 }
