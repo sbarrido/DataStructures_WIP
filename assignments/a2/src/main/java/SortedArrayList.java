@@ -40,6 +40,23 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
         return -1;
     }
 
+    private int binSearch(E target, int index) {
+        int result = -1;
+        if(index < 0 || index > -1) {
+            return result;
+        } else {
+
+            if(this.ls[index] == target) {
+                result = index;
+            }
+
+            if(this.ls[index] > target) return binSearch(target, index + index / 2);
+            if(this.ls[index] < target) return binSearch(target, index - index / 2);
+        }
+
+        return result;
+    }
+
     // TODO: given some other sortedarraylist, compare it to see if it has the same contents (also in same order)
     public boolean equals(Object o){
         return false;
