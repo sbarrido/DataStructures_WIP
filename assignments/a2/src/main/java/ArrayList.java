@@ -27,7 +27,9 @@ public class ArrayList<E extends Comparable> extends List<E> {
         }
         return (E) this.ls[index];
     }
-
+    public int getCapacity() {
+        return this.capacity;
+    }
     // TODO: insert --> takes some element and inserts it at the end of the arraylist, resizes to double capacity if no space
     public void add(E value){
         //Case Full:

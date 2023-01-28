@@ -50,8 +50,8 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
                 result = index;
             }
 
-            if(this.ls[index] > target) return binSearch(target, index + index / 2);
-            if(this.ls[index] < target) return binSearch(target, index - index / 2);
+//            if(this.ls[index] > target) return binSearch(target, index + index / 2);
+//            if(this.ls[index] < target) return binSearch(target, index - index / 2);
         }
 
         return result;
