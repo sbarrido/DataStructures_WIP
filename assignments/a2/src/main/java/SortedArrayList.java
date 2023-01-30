@@ -93,50 +93,28 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
 
     //search - binary search O(log(n)) for the element; returns -1 if not found
     public int search(E value){
-        return binSearch(value, this.size / 2);
+        return binSearch(value, 0, this.size - 1);
     }
 
-    private int binSearch(E target, int index) {
+    private int binSearch(E target, int low, int high) {
         int result = -1;
 
-        //INDEX OUT OF BOUNDS
-        if(index >= this.size) {
-            return result;
-        }
-        //compareTo
-        // flag = 0 -> target == this.ls[index]
-        // flag < 0 -> target < this.ls[index]
-        //flag > 0 -> target > this.ls[index]
-        int flag = target.compareTo(this.ls[index]);
-        boolean equal = flag == 0;
-        boolean small = flag < 0;
-        boolean big = flag > 0;
-
-        //TARGET FOUND
-        //RETURN RESULT = INDEX
-        if(equal){
-            result = index;
-            return result;
-        } else if(small) {
-            //Target < this.ls[index]
-            //Check if index 1, capture 0th item
-            //else check pivot in -half
-            if(index == 1) {
-                return binSearch(target, 0);
+        //Binary search
+        while(low <= high) {
+            //Find Mid
+            //compare to target value
+            //narrow search by 1/2
+            int mid = low + ((high - low) / 2);
+            int flag = target.compareTo(this.ls[mid]);
+            if(flag == 0) {
+                result = mid;
+                break;
+            } else if (flag < 0) {
+                high = mid - 1;
             } else {
-                return binSearch(target, index - index / 2);
-            }
-        } else if(big) {
-            //Target > this.ls[index]
-            //Check if 2nd to last index, capture last item
-            //Check pivot in +half
-            if(index == this.size - 2) {
-                return binSearch(target, this.size - 1);
-            } else {
-                return binSearch(target, index + index / 2);
+                low = mid + 1;
             }
         }
-
         //Always return result
         //index OR -1
         return result;

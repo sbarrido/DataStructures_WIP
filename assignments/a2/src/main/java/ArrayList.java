@@ -72,9 +72,11 @@ public class ArrayList<E extends Comparable> extends List<E> {
     public int search(E value){
         int found = -1;
         for(int i = 0; i < this.size; i++) {
-            if(this.ls[i] == value) {
-                found = i;
-                break;
+            if(this.ls[i] != null) {
+                if(value.compareTo(this.ls[i]) == 0) {
+                    found = i;
+                    break;
+                }
             }
         }
         return found;

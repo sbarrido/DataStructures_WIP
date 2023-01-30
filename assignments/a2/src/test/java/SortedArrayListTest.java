@@ -110,18 +110,17 @@ public class SortedArrayListTest {
         SortedArrayList<Double> sortList = new SortedArrayList<>();
 
         //ADD EFFICIENCY
+        Random gen = new Random();
         long simpleStartTime = System.nanoTime();
-        for(int i = 0; i < 10000; i++) {
-            Random gen = new Random();
-            simpleList.add(Double.valueOf(gen.nextDouble()));
+        for(int i = 0; i < 100000; i++) {
+            simpleList.add(gen.nextDouble());
         }
         long simpleEndTime = System.nanoTime();
         long simpleDuration = (simpleEndTime - simpleStartTime);
 
         long sortedStartTime = System.nanoTime();
-        for(int i = 0; i < 10000; i++) {
-            Random gen = new Random();
-            sortList.add(Double.valueOf(gen.nextDouble()));
+        for(int i = 0; i < 100000; i++) {
+            sortList.add(gen.nextDouble());
         }
         long sortedEndTime = System.nanoTime();
         long sortedDuration = (sortedEndTime - sortedStartTime);
@@ -143,7 +142,7 @@ public class SortedArrayListTest {
 
         System.out.println("ArrayList GET Speed:" + simpleDuration);
         System.out.println("SortedList GET Speed:" + sortedDuration);
-        assertEquals(true, sortedDuration < simpleDuration);
+        assertEquals(true, sortedDuration <= simpleDuration);
 
         //DELETE EFFICIENCY
         simpleStartTime = System.nanoTime();
@@ -158,7 +157,7 @@ public class SortedArrayListTest {
 
         System.out.println("ArrayList DELETE Speed:" + simpleDuration);
         System.out.println("SortedList DELETE Speed:" + sortedDuration);
-        //assertEquals(true, sortedDuration < simpleDuration);
+        assertEquals(true, sortedDuration > simpleDuration);
 
         //SEARCH EFFICIENCY
         simpleStartTime = System.nanoTime();
@@ -173,6 +172,6 @@ public class SortedArrayListTest {
 
         System.out.println("ArrayList SEARCH Speed:" + simpleDuration);
         System.out.println("SortedList SEARCH Speed:" + sortedDuration);
-        //assertEquals(true, sortedDuration < simpleDuration);
+        assertEquals(true, sortedDuration < simpleDuration);
     }
 }
