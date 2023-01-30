@@ -21,8 +21,7 @@ public class ArrayList<E extends Comparable> extends List<E> {
     }
 
     public E get(int index) throws IndexOutOfBoundsException{
-        boolean invalid = index >= this.size || index < 0;
-        if(invalid){
+        if(index >= this.size | index < 0){
             throw new IndexOutOfBoundsException();
         }
         return (E) this.ls[index];

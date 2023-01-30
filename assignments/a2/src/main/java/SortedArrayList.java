@@ -6,12 +6,12 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
     private int capacity;
     private Object[] ls;
 
-    // TODO: default: should create a sortedarraylist that is capable of holding 10 element
+    // default: should create a sortedarraylist that is capable of holding 10 element
     public SortedArrayList(){
         this((Class<E>) Comparable.class, 10);
     }
 
-    // TODO: second constructor - should create a sortedarraylist that is capable of holding x element that size
+    // second constructor - should create a sortedarraylist that is capable of holding x element that size
     public SortedArrayList(Class<E> c, int capacity){
         this.size = 0;
         this.capacity = capacity;
@@ -23,13 +23,13 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
     }
 
     public E get(int index) throws IndexOutOfBoundsException{
-        if(index >= this.size){
+        if(index >= this.size | index < 0){
             throw new IndexOutOfBoundsException();
         }
         return (E) this.ls[index];
     }
 
-    // TODO: inserts element while maintaining the sorted order of the contents; resize to double capacity if no space
+    //inserts element while maintaining the sorted order of the contents; resize to double capacity if no space
     public void add(E value) {
         //If Full, size == capacity
         //- double capacity
@@ -75,11 +75,23 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
     }
 
 
-    // TODO: delete - deletes an element at said index; moves elements such that there are no gaps in between them
+    //delete - deletes an element at said index; moves elements such that there are no gaps in between them
     public void delete(int index) throws IndexOutOfBoundsException{
+        //Case: bad index
+        //throw ex
+        boolean badIndex = index < 0 || index >= this.size;
+        if(badIndex) throw new IndexOutOfBoundsException();
+
+        //Case: Delete
+        for(int i = index; i < this.size; i++) {
+            this.ls[i] = this.ls[i+1];
+        }
+
+        //Reduce Size
+        size--;
     }
 
-    // TODO: search - binary search O(log(n)) for the element; returns -1 if not found
+    //search - binary search O(log(n)) for the element; returns -1 if not found
     public int search(E value){
         return binSearch(value, this.size / 2);
     }
@@ -91,19 +103,23 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
         if(index >= this.size) {
             return result;
         }
-        //TODO FIX FOR INDEX = 0 NEVER CHECKS
+        //compareTo
+        // flag = 0 -> target == this.ls[index]
+        // flag < 0 -> target < this.ls[index]
+        //flag > 0 -> target > this.ls[index]
         int flag = target.compareTo(this.ls[index]);
         boolean equal = flag == 0;
         boolean small = flag < 0;
         boolean big = flag > 0;
+
+        //TARGET FOUND
+        //RETURN RESULT = INDEX
         if(equal){
-            //TARGET FOUND
-            //RETURN RESULT = INDEX
             result = index;
             return result;
         } else if(small) {
             //Target < this.ls[index]
-            //Check if index 0, capture 0th item
+            //Check if index 1, capture 0th item
             //else check pivot in -half
             if(index == 1) {
                 return binSearch(target, 0);
@@ -112,8 +128,13 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
             }
         } else if(big) {
             //Target > this.ls[index]
+            //Check if 2nd to last index, capture last item
             //Check pivot in +half
-            return binSearch(target, index + index / 2);
+            if(index == this.size - 2) {
+                return binSearch(target, this.size - 1);
+            } else {
+                return binSearch(target, index + index / 2);
+            }
         }
 
         //Always return result
@@ -123,7 +144,18 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
 
     // TODO: given some other sortedarraylist, compare it to see if it has the same contents (also in same order)
     public boolean equals(Object o){
-        return false;
+        boolean isEqual = false;
+        if(o instanceof SortedArrayList<?>) {
+            SortedArrayList tmp = (SortedArrayList) o;
+            if(tmp.get(0) instanceof Comparable) {
+                Comparable val = (Comparable) tmp.get(0);
+                if(val.compareTo(this.ls[0]) == 0) {
+                    isEqual = true;
+                }
+            }
+        }
+
+        return isEqual;
     }
 
     public int getCapacity() {
