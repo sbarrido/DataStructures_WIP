@@ -4,6 +4,12 @@ public class Node implements Comparable {
 
     // TODO: given some keyword, and mode (1 = arraylist 2 = sorted arraylist) set up the Node
     public Node(String keyword, int mode){
+        this.keyword = keyword;
+        if(mode == 1) {
+            this.references = new ArrayList<>();
+        }else {
+            this.references = new SortedArrayList<>();
+        }
     }
 
     public String getKeyword(){
@@ -21,7 +27,11 @@ public class Node implements Comparable {
 
     // TODO: Compare some other Node to this Node, String compareTo is your bestfriend here; return -1 if the other object of comparison isn't a Node
     public int compareTo(Object o){
-        return -1;
+        int flag = -1;
+        if(o instanceof Node) {
+            flag = ((Node) o).getKeyword().compareTo(this.keyword);
+        }
+        return flag;
     }
 
     // TODO: similar to compareTo except in boolean format and is only concerned if the other Node has the same keyword or not

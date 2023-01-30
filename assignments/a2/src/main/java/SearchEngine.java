@@ -12,14 +12,25 @@ public class SearchEngine {
 
     // TODO: build the SearchEngine's nodelist according to mode (1 = ArrayList; 2 = SortedArrayList); build the searchEngine
     public SearchEngine(int mode) throws IOException {
-
+        //1. = ArrayList
+        //2. = SortedArrayList
+        switch(mode) {
+            case 1:
+                this.nodeList = new ArrayList<>();
+                break;
+            case 2:
+                this.nodeList = new SortedArrayList<>();
+                break;
+            default:
+                throw new IOException();
+        }
     }
 
     public List<Node> getNodeList(){
         return this.nodeList;
     }
 
-    // TODO: Go through the dataset and then create a new Node if the word hasn't been seen before. Add the current URL to its references
+    // Go through the dataset and then create a new Node if the word hasn't been seen before. Add the current URL to its references
     // if it hasn't been seen. If the node has been created already, add the current URL to its references. Add the Node to the the
     // SearchEngine's nodeList
     public void buildList() throws IOException {
@@ -29,7 +40,22 @@ public class SearchEngine {
             Document doc = Jsoup.connect(url).get();
             String text = doc.body().text().toLowerCase();
             String[] words = text.split("\\s+"); // splits by whitespace
-            // logic here
+            // LOGIC HERE:
+            //Iterate through list of words
+            for(String w : words) {
+                Node tmp = new Node(w, this.mode);
+                int index = this.nodeList.search(tmp);
+
+                //Searches if exists, index != -1
+                //true = insert additional reference
+                //false = add whole node w/ reference
+                if(index != -1){
+                    this.nodeList.get(index).insertReference(url);
+                } else {
+                    tmp.insertReference(url);
+                    this.nodeList.add(tmp);
+                }
+            }
         }
         reader.close();
         System.out.println("Finished reading through all URLs");
