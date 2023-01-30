@@ -17,9 +17,11 @@ public class SearchEngine {
         switch(mode) {
             case 1:
                 this.nodeList = new ArrayList<>();
+                this.buildList();
                 break;
             case 2:
                 this.nodeList = new SortedArrayList<>();
+                this.buildList();
                 break;
             default:
                 throw new IOException();
@@ -62,15 +64,22 @@ public class SearchEngine {
     }
 
     // TODO: Return the node's reference list - if the term isn't found, return an empty list
-    public List<Node> search(String term) {
+    public List<String> search(String term) {
         System.out.println("Searching for " + term + " using data structure mode " + mode + "...");
         // Search logic goes here
+        Node targetNode = new Node(term, this.mode);
+        int flag = this.nodeList.search(targetNode);
+        List<String> target = null;
+        if(flag != -1 ){
+            target = this.nodeList.get(flag).getReferences();
+        }
         // Example code for displaying results
-        System.out.println("Displaying results for " + term + ":");
-        System.out.println("    1. URL 1: ");
-        System.out.println("    2. URL 2: ");
-        System.out.println("    3. URL 3: ");
-        return null;
+//        System.out.println("Displaying results for " + term + ":");
+//        System.out.println("    1. URL 1: ");
+//        System.out.println("    2. URL 2: ");
+//        System.out.println("    3. URL 3: ");
+        System.out.print(target);
+        return target;
     }
 
     public static void main(String[] args) throws IOException {
