@@ -87,19 +87,37 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
     private int binSearch(E target, int index) {
         int result = -1;
 
+        //INDEX OUT OF BOUNDS
+        if(index >= this.size) {
+            return result;
+        }
         //TODO FIX FOR INDEX = 0 NEVER CHECKS
         int flag = target.compareTo(this.ls[index]);
-        switch(flag) {
-            case 0:
-                result = index;
-                break;
-            case -1:
+        boolean equal = flag == 0;
+        boolean small = flag < 0;
+        boolean big = flag > 0;
+        if(equal){
+            //TARGET FOUND
+            //RETURN RESULT = INDEX
+            result = index;
+            return result;
+        } else if(small) {
+            //Target < this.ls[index]
+            //Check if index 0, capture 0th item
+            //else check pivot in -half
+            if(index == 1) {
+                return binSearch(target, 0);
+            } else {
                 return binSearch(target, index - index / 2);
-            case 1:
-                return binSearch(target, index + index / 2);
+            }
+        } else if(big) {
+            //Target > this.ls[index]
+            //Check pivot in +half
+            return binSearch(target, index + index / 2);
         }
 
-
+        //Always return result
+        //index OR -1
         return result;
     }
 
