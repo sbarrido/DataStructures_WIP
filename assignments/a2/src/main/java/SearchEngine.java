@@ -2,7 +2,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.*;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class SearchEngine {
@@ -55,7 +54,7 @@ public class SearchEngine {
                 //Searches if exists, index != -1
                 //true = insert additional reference
                 //false = add whole node w/ reference
-                if(index != -1){
+                if(index > -1){
                     this.nodeList.get(index).insertReference(url);
                 } else {
                     tmp.insertReference(url);
@@ -78,17 +77,26 @@ public class SearchEngine {
         if (flag != -1) {
             target = this.nodeList.get(flag).getReferences();
         }
-        long endTime = System.nanoTime();
-        // Example code for displaying results
-//        System.out.println("Displaying results for " + term + ":");
-//        System.out.println("    1. URL 1: ");
-//        System.out.println("    2. URL 2: ");
-//        System.out.println("    3. URL 3: ");
-        long time = endTime - startTime;
-        System.out.println("Found " + target.size() + " results in " + time + "nanoseconds");
-        System.out.println("Displaying results for '" + term + "':");
-        for(int i = 0; i < target.size(); i++) {
-            System.out.println(i + ". " + target.get(i));
+
+
+        //Filter reference list
+        //visited urls stored in ArrayList<string> found
+        if(target != null) {
+            SortedArrayList<String> found = new SortedArrayList<>();
+            for(int i = 0; i < target.size(); i++) {
+                if(found.search(target.get(i)) == -1) {
+                    found.add(target.get(i));
+                }
+            }
+            long endTime = System.nanoTime();
+            long time = (endTime - startTime) / 1000;
+
+            //Print Results
+            System.out.println("Found " + found.size() + " results in " + time + " microseconds");
+            System.out.println("Displaying results for '" + term + "':");
+            for(int i = 0; i < found.size(); i++){
+                System.out.println(i + ". " + found.get(i));
+            }
         }
         return target;
     }

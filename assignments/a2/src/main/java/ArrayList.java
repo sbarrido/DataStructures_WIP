@@ -47,7 +47,8 @@ public class ArrayList<E extends Comparable> extends List<E> {
         }
         //Case default(empty, partial, full)
         // - Add to End
-        this.ls[this.size++] = value;
+        this.ls[this.size] = value;
+        this.size++;
     }
 
     // TODO: delete - deletes an element at said index; moves elements such that there are no gaps in between them
