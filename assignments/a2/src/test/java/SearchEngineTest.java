@@ -25,9 +25,9 @@ public class SearchEngineTest {
         assertEquals(true, SearchEngineTest.engine1.search("APPLE").size() == 0);
 
         long start2 = System.nanoTime();
-        System.out.println(SearchEngineTest.engine2.search("blue"));
+        System.out.println(SearchEngineTest.engine2.search("red"));
         long end2 = System.nanoTime();
-        assertEquals(true, SearchEngineTest.engine2.search("blue").size() > 0);
+        assertEquals(true, SearchEngineTest.engine2.search("red").size() > 0);
         assertEquals(true, (end1 - start1) > (end2 - start2));
     }
 }
