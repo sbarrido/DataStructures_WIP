@@ -98,7 +98,9 @@ public class SortedArrayList<E extends Comparable> extends List<E> {
 
     private int binSearch(E target, int low, int high) {
         int result = -1;
-
+        if(target == null) {
+            return -1;
+        }
         //Binary search
         while(low <= high) {
             //Find Mid

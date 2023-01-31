@@ -9,7 +9,7 @@ public class SearchEngine {
     private int mode;
     private List<Node> nodeList;
 
-    // TODO: build the SearchEngine's nodelist according to mode (1 = ArrayList; 2 = SortedArrayList); build the searchEngine
+    //build the SearchEngine's nodelist according to mode (1 = ArrayList; 2 = SortedArrayList); build the searchEngine
     public SearchEngine(int mode) throws IOException {
         //1. = ArrayList
         //2. = SortedArrayList
@@ -41,7 +41,7 @@ public class SearchEngine {
         BufferedReader reader = new BufferedReader(inRead);
         String url;
         while((url = reader.readLine()) != null){
-//            System.out.println("Loading " + url);
+            System.out.println("Loading " + url);
             Document doc = Jsoup.connect(url).get();
             String text = doc.body().text().toLowerCase();
             String[] words = text.split("\\s+"); // splits by whitespace
@@ -66,7 +66,7 @@ public class SearchEngine {
         System.out.println("Finished reading through all URLs");
     }
 
-    // TODO: Return the node's reference list - if the term isn't found, return an empty list
+    //Return the node's reference list - if the term isn't found, return an empty list
     public List<String> search(String term) {
         long startTime = System.nanoTime();
         System.out.println("Searching for " + term + " using data structure mode " + this.mode + "...");
@@ -85,7 +85,9 @@ public class SearchEngine {
             SortedArrayList<String> found = new SortedArrayList<>();
             for(int i = 0; i < target.size(); i++) {
                 if(found.search(target.get(i)) == -1) {
-                    found.add(target.get(i));
+                    if(target.get(i) != null) {
+                        found.add(target.get(i));
+                    }
                 }
             }
             long endTime = System.nanoTime();
@@ -95,8 +97,14 @@ public class SearchEngine {
             System.out.println("Found " + found.size() + " results in " + time + " microseconds");
             System.out.println("Displaying results for '" + term + "':");
             for(int i = 0; i < found.size(); i++){
-                System.out.println(i + ". " + found.get(i));
+                System.out.println(i + 1 + ". " + found.get(i));
             }
+
+            //Assign target to filtered list, found
+            target = found;
+        } else {
+            target = new SortedArrayList<>();
+            System.out.println("No Results Found");
         }
         return target;
     }
