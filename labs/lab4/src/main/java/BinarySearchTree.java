@@ -1,3 +1,4 @@
+
 public class BinarySearchTree {
 
     private int size;
@@ -21,7 +22,8 @@ public class BinarySearchTree {
      * @param data The integer to be inserted
      */
     public void insert(int data) {
-        // TODO
+        insert(data, this.root);
+        this.size++;
     }
 
     /**
@@ -30,7 +32,26 @@ public class BinarySearchTree {
      * @param curNode The current Node in the traversal
      */
     private void insert(int data, BinaryTreeNode curNode) {
-        // TODO
+        //Data Small check left
+        //Data Big check right
+        //Do nothing if ==
+        if(curNode == null) {
+            this.root = new BinaryTreeNode(data, null, null, null);
+        } else {
+            if(curNode.getItem() > data) {
+                if(curNode.getLeft() == null) {
+                    curNode.setLeft(new BinaryTreeNode(data, curNode, null, null));
+                } else {
+                    insert(data, curNode.getLeft());
+                }
+            } else if (curNode.getItem() < data) {
+                if(curNode.getRight() == null) {
+                    curNode.setRight(new BinaryTreeNode(data, curNode, null, null));
+                } else {
+                    insert(data, curNode.getRight());
+                }
+            }
+        }
     }
 
     /**
@@ -40,8 +61,7 @@ public class BinarySearchTree {
      * @return The Node containing the integer to remove or null if one is not found
      */
     public BinaryTreeNode remove(int data) {
-        // TODO
-        return null;
+        return remove(data, this.root);
     }
 
 
@@ -53,8 +73,42 @@ public class BinarySearchTree {
      * @return The Node containing the integer to remove or null if one is not found
      */
     private BinaryTreeNode remove(int data, BinaryTreeNode curNode) {
-        // TODO
-        return null;
+        BinaryTreeNode target = null;
+        if(curNode != null) {
+            //Target found
+            if (curNode.getItem() == data) {
+                target = curNode;
+
+                BinaryTreeNode leftMax = extractLeftMax(target);
+                BinaryTreeNode targetParent = target.getParent();
+                if(target == leftMax) {
+                    leftMax = null;
+                }
+
+                if(leftMax != null) {
+                    if(leftMax.getItem() < targetParent.getItem()) {
+                        targetParent.setLeft(leftMax);
+                    } else {
+                        targetParent.setRight(leftMax);
+                    }
+
+                    leftMax.setParent(targetParent);
+                } else {
+                    if(target.getItem() < targetParent.getItem()) {
+                        targetParent.setLeft(leftMax);
+                    } else {
+                        targetParent.setRight(leftMax);
+                    }
+                }
+                this.size--;
+            } else if (data < curNode.getItem()) {
+                return remove(data, curNode.getLeft());
+            } else if (data > curNode.getItem()) {
+                return remove(data, curNode.getRight());
+            }
+        }
+
+        return target;
     }
 
     /**
@@ -63,8 +117,19 @@ public class BinarySearchTree {
      * @return The minimum Node in the child's tree
      */
     private BinaryTreeNode extractLeftMax(BinaryTreeNode curNode) {
-        // TODO
-        return null;
+        BinaryTreeNode target = null;
+
+        if(curNode.getLeft() == null) {
+            if(curNode.getRight() != null) {
+                target = curNode.getRight();
+            } else {
+                target = curNode;
+            }
+        } else {
+            return extractLeftMax(curNode.getLeft());
+        }
+
+        return target;
     }
 
     /**
@@ -73,7 +138,7 @@ public class BinarySearchTree {
      * @return A Node containing the given integer or null if one is not found
      */
     public BinaryTreeNode search(int data) {
-        // TODO
+        //TODO
         return null;
     }
 
@@ -84,8 +149,18 @@ public class BinarySearchTree {
      * @return A Node containing the given integer or null if one is not found
      */
     private BinaryTreeNode search(int data, BinaryTreeNode curNode) {
-        // TODO
-        return null;
+        BinaryTreeNode target = null;
+        if(curNode != null) {
+            //Target found
+            if (curNode.getItem() == data) {
+                target = curNode;
+            } else if (data < curNode.getItem()) {
+                return remove(data, curNode.getLeft());
+            } else if (data > curNode.getItem()) {
+                return remove(data, curNode.getRight());
+            }
+        }
+        return target;
     }
 
     /**
@@ -94,8 +169,7 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     public String getPreOrderStr() {
-        // TODO
-        return null;
+        return getPreOrderStr(this.root);
     }
 
     /**
@@ -104,8 +178,19 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     private String getPreOrderStr(BinaryTreeNode curNode) {
-        // TODO
-        return null;
+        String target = "";
+        if(curNode == null) {
+            return target;
+        }
+        target += curNode.getItem();
+
+        if(curNode.getLeft() != null) {
+            target += ", " + this.getPreOrderStr(curNode.getLeft());
+        }
+        if(curNode.getRight() != null) {
+            target += ", " + this.getPreOrderStr(curNode.getRight());
+        }
+        return target;
     }
 
     /**
@@ -114,8 +199,7 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     public String getInOrderStr() {
-        // TODO
-        return null;
+        return getInOrderStr(this.root);
     }
 
     /**
@@ -124,8 +208,19 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     private String getInOrderStr(BinaryTreeNode curNode) {
-        // TODO
-        return null;
+        String target = "";
+        if(curNode == null) {
+            return target;
+        }
+
+        if(curNode.getLeft() != null) {
+            target += this.getInOrderStr(curNode.getLeft()) + ", ";
+        }
+        target += curNode.getItem();
+        if(curNode.getRight() != null) {
+            target += ", " + this.getPreOrderStr(curNode.getRight());
+        }
+        return target;
     }
 
     /**
@@ -134,8 +229,7 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     public String getPostOrderStr() {
-        // TODO
-        return null;
+        return this.getPostOrderStr(this.root);
     }
 
     /**
@@ -144,11 +238,18 @@ public class BinarySearchTree {
      * @return A String representation of the traversal
      */
     private String getPostOrderStr(BinaryTreeNode curNode) {
-        // TODO
-        return null;
-    }
+        String target = "";
+        if(curNode == null) {
+            return target;
+        }
 
-    public static void main(String[] args){
-        System.out.println("Hello");
+        if(curNode.getLeft() != null) {
+            target += this.getPreOrderStr(curNode.getLeft()) + ", ";
+        }
+        if(curNode.getRight() != null) {
+            target += this.getPreOrderStr(curNode.getRight()) + ", ";
+        }
+        target += curNode.getItem();
+        return target;
     }
 }
