@@ -39,24 +39,25 @@ public class ArrayList<E extends Comparable> extends List<E> {
             this.capacity = this.capacity * 2;
             Object[] tmp = new Object[this.capacity];
 
-            for(int i = 0; i < this.size - 1; i++) {
+            for(int i = 0; i < this.size; i++) {
                 tmp[i] = this.ls[i];
             }
 
             this.ls = tmp;
         }
+
         //Case default(empty, partial, full)
         // - Add to End
-        this.ls[this.size] = value;
-        this.size++;
+        this.ls[this.size++] = value;
     }
 
     // TODO: delete - deletes an element at said index; moves elements such that there are no gaps in between them
     public void delete(int index) throws IndexOutOfBoundsException{
         //Case OutOBounds:
         // - indexOutOfBounds
-        boolean invalid = index < 0 || index >= this.size;
-        if(invalid) {
+        boolean invalid = index < 0 || index > this.size;
+        boolean empty = this.size == 0;
+        if(invalid || empty) {
             throw new IndexOutOfBoundsException();
         }
         //Case Default (Beginning,mid, end)

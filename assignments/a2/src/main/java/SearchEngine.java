@@ -78,30 +78,75 @@ public class SearchEngine {
             target = this.nodeList.get(flag).getReferences();
         }
 
+        class URL implements Comparable {
+            public String url;
+            public int count;
 
+            @Override
+            public int compareTo(Object o) {
+                int flag = -1;
+                if(o instanceof URL) {
+                    String target = ((URL) o).url;
+                    flag = this.url.compareTo(target);
+                }
+                return flag;
+            }
+        }
         //Filter reference list
         //visited urls stored in ArrayList<string> found
         if(target != null) {
-            SortedArrayList<String> found = new SortedArrayList<>();
+            SortedArrayList<URL> found = new SortedArrayList<>();
+
             for(int i = 0; i < target.size(); i++) {
-                if(found.search(target.get(i)) == -1) {
+
+                URL tmp = new URL();
+                tmp.url = target.get(i);
+                //New URL -> store in Found list
+                if(found.search(tmp) == -1) {
                     if(target.get(i) != null) {
-                        found.add(target.get(i));
+                        tmp.count++;
+                        found.add(tmp);
                     }
+                } else {
+                    //Existing URL -> increment counter
+                    found.get(found.search(tmp)).count++;
                 }
             }
-            long endTime = System.nanoTime();
-            long time = (endTime - startTime) / 1000;
 
-            //Print Results
-            System.out.println("Found " + found.size() + " results in " + time + " microseconds");
-            System.out.println("Displaying results for '" + term + "':");
+            /*STANDARD PRINTING*/
+            System.out.println("STANDARD PRINT");
             for(int i = 0; i < found.size(); i++){
-                System.out.println(i + 1 + ". " + found.get(i));
+                System.out.println(i + 1 + ". " + found.get(i).url);
+            }
+            System.out.println("END STANDARD PRINT");
+
+            List<String> convertFound = new ArrayList<>();
+            while(found.size() > 0) {
+                int maxIndex = 0;
+                int maxCount = 0;
+                for(int i = 0; i < found.size(); i++) {
+                    int curr = found.get(i).count;
+
+                    if(curr > maxCount) {
+                        maxIndex = i;
+                        maxCount = curr;
+                    }
+                }
+                convertFound.add(found.get(maxIndex).url);
+                found.delete(maxIndex);
             }
 
+            long endTime = System.nanoTime();
+            double time = (endTime - startTime) / 1000;
+
+            //Print Results
+            System.out.println("Found " + convertFound.size() + " results in " + time + " microseconds");
+            System.out.println("Displaying results for '" + term + "':");
+            for(int i = 0; i < convertFound.size(); i++) {
+                System.out.println(i + 1 + ". " + convertFound.get(i));
+            }
             //Assign target to filtered list, found
-            target = found;
+            target = convertFound;
         } else {
             target = new SortedArrayList<>();
             System.out.println("No Results Found");
