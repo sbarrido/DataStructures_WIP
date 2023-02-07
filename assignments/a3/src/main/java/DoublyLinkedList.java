@@ -8,6 +8,9 @@ public class DoublyLinkedList<E> {
 
     // TODO: default constructor
     public DoublyLinkedList(){
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
     }
 
     // TODO: secondary constructor
@@ -24,10 +27,18 @@ public class DoublyLinkedList<E> {
     // Insert elem at the start of the DoublyLinkedList
     void insertAtHead(E elem){
         NodeDL target = new NodeDL(elem);
+        if(this.size == 0) {
+            this.head = target;
+        }
         target.next = this.head;
         target.prev = null;
+        this.head.prev = target;
 
+        this.size++;
         this.head = target;
+        if(this.size == 1) {
+            this.tail = this.head;
+        }
     }
 
     //  Insert elem at the end of the DoublyLinkedList
@@ -35,65 +46,79 @@ public class DoublyLinkedList<E> {
         NodeDL target = new NodeDL(elem);
         target.next = null;
         target.prev = this.tail;
+        if(this.tail != null) {
+            this.tail.next = target;
+        }
 
+        this.size++;
         this.tail = target;
+        if(this.size == 1){
+            this.head = this.tail;
+        }
     }
 
-    // TODO: Delete the element from the start of the DoublyLinkedList. Throw an EmptyListE if there's nothing to delete
+    //  Delete the element from the start of the DoublyLinkedList. Throw an EmptyListE if there's nothing to delete
     E deleteAtHead() throws EmptyListE{
         if(this.size == 0) { throw new EmptyListE(); }
 
         E target = this.head.data;
         this.head = this.head.next;
-        this.head.prev = null;
+        if(this.head != null) {
+            this.head.prev = null;
+        }
 
+        this.size--;
         return target;
     }
 
 
-    // TODO: Delete the element from the end of the DoublyLinkedList. Throw an EmptyListE if there's nothing to delete
+    //  Delete the element from the end of the DoublyLinkedList. Throw an EmptyListE if there's nothing to delete
     E deleteAtTail() throws EmptyListE{
         if(this.size == 0) { throw new EmptyListE(); }
 
         E target = this.tail.data;
         this.tail = this.tail.prev;
-        this.tail.next = null;
+        if(this.tail != null) {
+            this.tail.next = null;
+        }
 
+        this.size--;
         return target;
     }
 
-    // TODO: Get the element at some position. If it's not possible, throw an IndexOutOfBoundsException
+    //  Get the element at some position. If it's not possible, throw an IndexOutOfBoundsException
     E get (int index) throws IndexOutOfBoundsException{
         if(index < 0 || index > this.size) {
             throw new IndexOutOfBoundsException();
         }
-
-        NodeDL curr = this.head;
-        while(index > 0) {
+        NodeDL<E> curr = this.head;
+        for(int i = 0; i < index; i++) {
             curr = curr.next;
         }
 
-        return (E) curr.data;
+        return curr.data;
     }
 
-    // TODO: Search the DoublyLinkedList for elem. If not found, return -1;
+    // Search the DoublyLinkedList for elem. If not found, return -1;
     public int search(E elem){
         int index = 0;
 
         NodeDL curr = this.head;
         boolean found = false;
-        while(curr != this.tail & !found) {
+        while(curr != null) {
             if(curr.data == elem) {
                 found = true;
+                break;
             }
 
             curr = curr.next;
             index++;
         }
+        if(!found) index = -1;
         return index;
     }
 
-    // TODO: When passed some object, return true if it's a DoublyLinkedList, has the same elements in the same order.
+    //  When passed some object, return true if it's a DoublyLinkedList, has the same elements in the same order.
     public boolean equals(Object o){
         boolean isEqual = false;
 
