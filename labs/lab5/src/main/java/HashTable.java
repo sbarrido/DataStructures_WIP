@@ -43,6 +43,7 @@ public class HashTable {
                 if(e.key.equals(key)) {
                     e.value = value;
                     found = true;
+                    break;
                 }
             }
             //!found = new entry added

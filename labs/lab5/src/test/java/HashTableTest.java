@@ -58,6 +58,7 @@ public class HashTableTest {
     }
     @Test
     void putTest() {
+        //Base Init
         assertEquals(4, hTable.getSize());
         assertEquals(11, hTable.getCapacity());
 
@@ -65,11 +66,13 @@ public class HashTableTest {
         hTable.put("Third", "Elephant");
         assertEquals(5, hTable.getSize());
         assertEquals(11, hTable.getCapacity());
+        assertEquals("Elephant", hTable.get("Third"));
 
         //Update Entry
         hTable.put("Third", "Trident");
         assertEquals(5, hTable.getSize());
         assertEquals(11, hTable.getCapacity());
+        assertEquals("Trident", hTable.get("Third"));
 
         //Rehash and Double capacity
         hTable.put("Peanut", "Butter");
@@ -77,8 +80,10 @@ public class HashTableTest {
         assertEquals(22, hTable.getCapacity());
 
         //Check update Entry after rehash
+        assertEquals("Monkey", hTable.get("First"));
         hTable.put("First", "Carrrot");
         assertEquals(6, hTable.getSize());
         assertEquals(22, hTable.getCapacity());
+        assertEquals("Carrrot", hTable.get("First"));
     }
 }
