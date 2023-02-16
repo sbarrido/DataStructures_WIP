@@ -37,7 +37,7 @@ public class SearchEngine {
     // SearchEngine's nodeList
     public void buildList() throws IOException {
         InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
-        InputStreamReader inRead = new InputStreamReader((in));
+        InputStreamReader inRead = new InputStreamReader(in);
         BufferedReader reader = new BufferedReader(inRead);
         String url;
         while((url = reader.readLine()) != null){
