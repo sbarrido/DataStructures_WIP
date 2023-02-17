@@ -11,6 +11,8 @@ public class HashTableTests {
     @BeforeEach
     void initTable() {
         table = new HashTable();
+
+        //Putting in empty table
         table.put("a", "a");
         table.put("b", "b");
         table.put("l", "l");
@@ -45,7 +47,7 @@ public class HashTableTests {
         assertEquals("b", entries.get(10).getKey());
         assertEquals("cat", entries.get(10).getValue());
 
-        //Put new Values
+        //Put new Values: non-empty list
         table.put("c", "c");
         table.put("d", "d");
         assertEquals(5, table.getSize());
@@ -62,10 +64,43 @@ public class HashTableTests {
         assertEquals("cat", entries.get(6).getValue());
         assertEquals("e", entries.get(11).getKey());
         assertEquals("e", entries.get(11).getValue());
+
+        //Adding onto Tombstone
+        table.remove("a");
+        assertEquals(Entry.Type.TOMBSTONE, entries.get(5).getType());
+        table.put("a", "I LOVE PICKLEBALL");
+        assertEquals(6, table.getSize());
+        assertEquals("a", entries.get(5).getKey());
+        assertEquals("I LOVE PICKLEBALL", entries.get(5).getValue());
     }
-//    @Test
-//    void getTest() {
-//        assertEquals("Pickleball", table.get("Third"));
-//        assertEquals("Dinosuar", table.get("second"));
-//    }
+    @Test
+    void getTest() {
+        assertEquals("a", table.get("a"));
+        assertEquals("b", table.get("b"));
+        assertEquals(null, table.get("BANANANANANNAAN"));
+
+        //Add until rehash
+        table.put("c", "c");
+        table.put("d", "d");
+        table.put("e", "e");
+
+        //Check get funcs still work after rehash
+        assertEquals(6, table.getSize());
+        assertEquals("a", table.get("a"));
+        assertEquals("b", table.get("b"));
+        assertEquals(null, table.get("BANANANANANNAAN"));
+    }
+    @Test
+    void rmvTest() {
+        //Remove Existing
+        table.remove("a");
+        assertEquals(Entry.Type.TOMBSTONE, table.getEntries().get(9).getType());
+        assertEquals(2, table.getSize());
+
+        //Attempt to remove tombstone
+        assertEquals(null, table.get("a"));
+
+        //Attempt to remove non-existing key
+        assertEquals(null, table.get("CHIHACIDAOCHU"));
+    }
 }

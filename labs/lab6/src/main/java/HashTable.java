@@ -113,7 +113,6 @@ public class HashTable {
         //init hash index
         int collCount = 0;
         int index = hash(key, collCount);
-        System.out.println("Getting:" +index);
         Entry target = this.entries.get(index);
         //Valid entry is
         //(1) null
@@ -129,12 +128,17 @@ public class HashTable {
                     target.getKey() == key;
         }
 
-        System.out.println(target);
         //Init string value
         //(1) return null, target not found
         //(2) return target.value, target found
         String targetVal = null;
-        if(target != null) { targetVal = target.getValue(); }
+        if(target != null) {
+            if(target.getType() == Entry.Type.TOMBSTONE) {
+                targetVal = null;
+            } else {
+                targetVal = target.getValue();
+            }
+        }
 
         return targetVal;
     }
@@ -162,6 +166,7 @@ public class HashTable {
         //Target Found - kill
         if(target != null) {
             target.markTombstone();
+            this.size--;
         }
     }
 
