@@ -76,7 +76,7 @@ public class HashTable {
         //(3) Tombstone Entry
         Entry target = this.entries.get(index);
         boolean valid = target == null ||
-                target.getKey() == key ||
+                target.getKey().equals(key) ||
                 target.getType() == Entry.Type.TOMBSTONE;
         while(!valid) {
             //!valid
@@ -84,7 +84,7 @@ public class HashTable {
             index = hash(key, collCount++);
             target = this.entries.get(index);
             valid = target == null ||
-                    target.getKey() == key ||
+                    target.getKey().equals(key) ||
                     target.getType() == Entry.Type.TOMBSTONE;
         }
 
@@ -101,8 +101,8 @@ public class HashTable {
 
         //Add Altered Entry at index
         this.size++;
+        this.entries.set(index, target);
         if(this.size*2 >= this.capacity) this.rehash();
-        this.entries.add(index, target);
     }
 
     /**
@@ -173,7 +173,9 @@ public class HashTable {
         this.capacity *= 2;
         this.capacity = this.nextPrime(this.capacity);
         ArrayList<Entry> tmp = new ArrayList<>(this.capacity);
-
+        for(int i = 0; i < this.capacity; i++) {
+            tmp.add(null);
+        }
         //Iterate through current non-null entries
         for(Entry entry : this.entries) {
             if(entry != null) {
@@ -194,8 +196,7 @@ public class HashTable {
                 tmp.add(index, entry);
             }
         }
-
-        System.out.println("rehashed");
+        
         this.entries = tmp;
     }
 

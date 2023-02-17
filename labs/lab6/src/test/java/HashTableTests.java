@@ -11,54 +11,57 @@ public class HashTableTests {
     @BeforeEach
     void initTable() {
         table = new HashTable();
-//        table.put("a", "a");
-//        table.put("b", "b");
-//        table.put("l", "l");
+        table.put("a", "a");
+        table.put("b", "b");
+        table.put("l", "l");
     }
 
     @Test
     void initTest() {
+        //Init Hashtable
         assertEquals(true, table instanceof HashTable);
         assertEquals(true, table.getEntries() instanceof List<Entry>);
-        assertEquals(0, table.getSize());
+        assertEquals(3, table.getSize());
+
+        List<Entry> entries = table.getEntries();
+
+        //Init Put Hashtable
+        assertEquals("a", entries.get(9).getKey());
+        assertEquals("a", entries.get(9).getValue());
+
+        assertEquals("b", entries.get(10).getKey());
+        assertEquals("b", entries.get(10).getValue());
+
+        assertEquals("l", entries.get(2).getKey());
+        assertEquals("l", entries.get(2).getValue());
     }
     @Test
     void putTest() {
-       //table.put("trash", "big");
-//        for(int i = 0; i < table.getEntries().size(); i++){
-//            System.out.print(i + ": ");
-//            Entry target = table.getEntries().get(i);
-//            if(target == null){
-//                System.out.println(target);
-//            } else {
-//                System.out.println(target.getKey());
-//            }
-//        }
         List<Entry> entries = table.getEntries();
-        table.put("a", "a");
-        assertEquals(1, table.getSize());
-        assertEquals("a", entries.get(9).getKey());
-        assertEquals("a", entries.get(9).getValue());
-        table.put("b", "b");
-        assertEquals(2, table.getSize());
+
+        //Update Existing Key-Value Pair
+        table.put("b","cat");
+        assertEquals(3, table.getSize());
         assertEquals("b", entries.get(10).getKey());
-        assertEquals("b", entries.get(10).getValue());
-        table.put("l", "l");
-        assertEquals(3, table.getSize());
-        assertEquals("l", entries.get(2).getKey());
-        assertEquals("l", entries.get(2).getValue());
+        assertEquals("cat", entries.get(10).getValue());
 
-        table.put("l", "update");
-        assertEquals(3, table.getSize());
-        assertEquals("l", entries.get(2).getKey());
-        assertEquals("update", entries.get(2).getValue());
+        //Put new Values
+        table.put("c", "c");
+        table.put("d", "d");
+        assertEquals(5, table.getSize());
 
-       // assertEquals(4, table.getSize());
-//        assertEquals(false, table.getEntries().isEmpty());
-//        assertEquals("Third", table.getEntries().get(1).getKey());
-//      //  assertEquals("trash", table.getEntries().get(8).getKey());
-//        assertEquals(null, table.getEntries().get(6));
-
+        //Rehash
+        //Test Rehashing size increases
+        //New hashed index for existing KV-pairs
+        table.put("e","e");
+        entries = table.getEntries();
+        assertEquals(6, table.getSize());
+        assertEquals("a", entries.get(5).getKey());
+        assertEquals("a", entries.get(5).getValue());
+        assertEquals("b", entries.get(6).getKey());
+        assertEquals("cat", entries.get(6).getValue());
+        assertEquals("e", entries.get(11).getKey());
+        assertEquals("e", entries.get(11).getValue());
     }
 //    @Test
 //    void getTest() {
