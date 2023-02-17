@@ -10,6 +10,10 @@ public class HashTable {
 
     public HashTable() {
         this.entries = new ArrayList<>(INITIAL_CAPACITY);
+        for(int i = 0; i < this.entries.size(); i++) {
+            this.entries.add(null);
+            System.out.println("added null");
+        }
         this.size = 0;
     }
 
@@ -34,7 +38,7 @@ public class HashTable {
         int hash1 = key.hashCode();
         int hash2 = prevPrime - (hash1 % prevPrime);
 
-        return hash1 + collisions * hash2;
+        return (hash1 + collisions * hash2) % this.capacity;
     }
 
     /**
@@ -72,8 +76,8 @@ public class HashTable {
         //(3) Tombstone Entry
         Entry target = this.entries.get(index);
         boolean valid = target == null |
-                        target.getKey() == key ||
-                        target.getType() == Entry.Type.TOMBSTONE;
+                target.getKey() == key ||
+                target.getType() == Entry.Type.TOMBSTONE;
         while(!valid) {
             //!valid
             //Find new Hashed index, increment collision counter
