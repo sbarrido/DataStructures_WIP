@@ -12,8 +12,6 @@ public class HashTableTest {
         hTable.put("Second", "Donkey");
         hTable.put("Bounce", "Ball");
         hTable.put("Thicc", "Boots");
-
-
     }
     @Test
     void rmvTest() {
