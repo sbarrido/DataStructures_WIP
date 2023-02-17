@@ -9,10 +9,9 @@ public class HashTable {
     private int capacity = INITIAL_CAPACITY;
 
     public HashTable() {
-        this.entries = new ArrayList<>(INITIAL_CAPACITY);
-        for(int i = 0; i < this.entries.size(); i++) {
+        this.entries = new ArrayList<>();
+        for(int i = 0; i < INITIAL_CAPACITY; i++) {
             this.entries.add(null);
-            System.out.println("added null");
         }
         this.size = 0;
     }
@@ -36,6 +35,7 @@ public class HashTable {
     private int hash(String key, int collisions) {
         int prevPrime = this.previousPrime(this.capacity);
         int hash1 = key.hashCode();
+        if(hash1 < 0) { hash1 *= -1; }
         int hash2 = prevPrime - (hash1 % prevPrime);
 
         return (hash1 + collisions * hash2) % this.capacity;
@@ -75,7 +75,7 @@ public class HashTable {
         //(2) Entry.key = key
         //(3) Tombstone Entry
         Entry target = this.entries.get(index);
-        boolean valid = target == null |
+        boolean valid = target == null ||
                 target.getKey() == key ||
                 target.getType() == Entry.Type.TOMBSTONE;
         while(!valid) {
@@ -83,22 +83,25 @@ public class HashTable {
             //Find new Hashed index, increment collision counter
             index = hash(key, collCount++);
             target = this.entries.get(index);
-            valid = target == null |
+            valid = target == null ||
                     target.getKey() == key ||
                     target.getType() == Entry.Type.TOMBSTONE;
         }
 
         //Null or TOMBSTONE
         //create new Entry w/ Key and value
-        if(target == null | target.getType() == Entry.Type.TOMBSTONE) {
+        if(target == null || target.getType() == Entry.Type.TOMBSTONE) {
             target = new Entry(key, value);
         } else {
             //Found Entry.key
             //Update Value
             target.setValue(value);
+            this.size--;
         }
 
         //Add Altered Entry at index
+        this.size++;
+        if(this.size*2 >= this.capacity) this.rehash();
         this.entries.add(index, target);
     }
 
@@ -110,22 +113,23 @@ public class HashTable {
         //init hash index
         int collCount = 0;
         int index = hash(key, collCount);
+        System.out.println("Getting:" +index);
         Entry target = this.entries.get(index);
-
         //Valid entry is
         //(1) null
         //(2) found same Key
-        boolean valid = target == null |
+        boolean valid = target == null ||
                         target.getKey() == key;
         while(!valid) {
             //Not Valid:
             //call hash with incremented collision (doubleHash)
             index = hash(key, collCount++);
             target = this.entries.get(index);
-            valid = target == null |
+            valid = target == null ||
                     target.getKey() == key;
         }
 
+        System.out.println(target);
         //Init string value
         //(1) return null, target not found
         //(2) return target.value, target found
@@ -142,7 +146,7 @@ public class HashTable {
         int collCount = 0;
         int index = hash(key, collCount);
         Entry target = this.entries.get(index);
-        boolean valid = target == null |
+        boolean valid = target == null ||
                         target.getKey().equals(key);
 
         //Loop until Stop Conditions:
@@ -151,7 +155,7 @@ public class HashTable {
         while(!valid) {
             index = hash(key, collCount++);
             target = this.entries.get(index);
-            valid = target == null |
+            valid = target == null ||
                     target.getKey().equals(key);
         }
 
@@ -191,6 +195,7 @@ public class HashTable {
             }
         }
 
+        System.out.println("rehashed");
         this.entries = tmp;
     }
 
