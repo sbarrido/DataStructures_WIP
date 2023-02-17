@@ -127,13 +127,13 @@ public class MazeSolver {
         System.out.println("Maze can be solved: " + result);
         return result;
     }
-//    public static void main(String[] args) {
-//        try{
-//            MazeSolver.solve("maze1.txt");
-//            MazeSolver.solve("maze2.txt");
-//            MazeSolver.solve("maze3.txt");
-//        } catch(Exception ex) {
-//            System.out.println(ex);
-//        }
-//    }
+    public static void main(String[] args) {
+        try{
+            MazeSolver.solve("maze1.txt");
+            MazeSolver.solve("maze2.txt");
+            MazeSolver.solve("maze3.txt");
+        } catch(Exception ex) {
+            System.out.println(ex);
+        }
+    }
 }

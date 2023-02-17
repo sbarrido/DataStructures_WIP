@@ -18,7 +18,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -38,7 +38,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/ssbar/Documents/C343_DataStructures/Assignments/A1/HW1",
+    "last_opened_file_path": "C:/Users/ssbar/Documents/iu/c343/assignments/a1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -111,6 +111,7 @@
       <workItem from="1674046183203" duration="736000" />
       <workItem from="1674053734755" duration="1593000" />
       <workItem from="1674137613206" duration="2591000" />
+      <workItem from="1675743097586" duration="32000" />
     </task>
     <servers />
   </component>

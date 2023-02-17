@@ -17,6 +17,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     // TODO: BST
     public BST(BinaryNode<E> root){
         this.root = root;
+        this.height = 1;
+        this.size = 1;
     }
 
     // Access field
@@ -37,6 +39,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
     // TODO: updateHeight - Update the root height to reflect any changes
     public void updateHeight() {
+        int newHeight = Math.max(this.root.left().height(), this.root.right().height());
+        this.height = newHeight + 1;
     }
 
     // Traversals that return lists
@@ -66,7 +70,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     //    This will be called on the left subtree and will get the maximum value.
     public BinaryNode<E> extractRightMost(BinaryNode<E> curNode) {
         BinaryNode<E> rightChild = curNode.right();
-        BinaryNode<E> target = rightChild;
+        BinaryNode<E> target;
 
         if(rightChild == null) {
             target = curNode;
@@ -96,12 +100,60 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     }
     // TODO: insert
     public void insert(E elem) {
+        this.insertHelper(elem, this.root);
+    }
+    public void insertHelper(E elem, BinaryNode<E> curr) {
+        int flag = curr.data().compareTo(elem);
 
+        if(flag < 0) {
+            //go left
+            //Check left child
+            //leftChild = null, insert
+            //else, travel to leftChild
+            if(curr.left() == null) {
+                curr.setLeft(new BinaryNode<>(elem));
+            } else {
+                this.insertHelper(elem, curr.left());
+            }
+        }
+        if(flag > 0) {
+            // go right
+            //Check right child
+            //rightChild = null, insert
+            //else travel to right
+            if(curr.right() == null) {
+                curr.setRight(new BinaryNode<>(elem));
+            } else {
+                this.insertHelper(elem, curr.right());
+            }
+        }
     }
 
     // TODO: delete
     public BinaryNode<E> delete(E elem) {
         return null;
+    }
+    public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
+        BinaryNode<E> target = null;
+        if(curr.data() == elem) {
+            target = curr;
+        } else {
+            //Check Children
+            int flag = curr.data().compareTo(elem);
+            if(flag > 0) {
+                //right child
+                if(curr.hasRight()) {
+                    this.deleteHelper(elem, curr.right());
+                }
+            }
+            if(flag < 0) {
+                //left child
+                if(curr.hasLeft()) {
+                    this.deleteHelper(elem, curr.left());
+                }
+            }
+        }
+        return target;
     }
 
     // Stuff to help you debug if you want
