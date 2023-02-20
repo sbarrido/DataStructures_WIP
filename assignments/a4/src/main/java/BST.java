@@ -52,11 +52,14 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         }
 
         int newHeight = Math.max(lHeight, rHeight);
-        if(newHeight != this.height) {
+
+        if(newHeight != this.root.height()) {
             this.height = newHeight + 1;
         } else {
-            this.height = root.height();
+            this.height = newHeight;
         }
+
+        this.root.setHeight(this.height);
     }
 
     // Traversals that return lists
@@ -116,7 +119,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
         return target;
     }
-    //TODO: insert
+    //insert
     public void insert(E elem) {
         if(this.root == null) {
             this.root = new BinaryNode<E>(elem);
@@ -138,31 +141,125 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             //else, travel to leftChild
             if(curr.left() == null) {
                 curr.setLeft(new BinaryNode<>(elem));
+                if(!curr.hasRight()) {
+                    curr.setHeight(curr.height() + 1);
+                }
             } else {
+                curr.setHeight(curr.height() + 1);
                 this.insertHelper(elem, curr.left());
             }
-        }
-        if(flag > 0) {
+        } else if(flag > 0) {
             // go right
             //Check right child
             //rightChild = null, insert
             //else travel to right
             if(curr.right() == null) {
                 curr.setRight(new BinaryNode<>(elem));
+                if(!curr.hasLeft()) {
+                    curr.setHeight(curr.height() + 1);
+                }
             } else {
+                curr.setHeight(curr.height() + 1);
                 this.insertHelper(elem, curr.right());
             }
         }
-
-        curr.setHeight(curr.height() + 1);
     }
 
     //TODO : delete
     public BinaryNode<E> delete(E elem) {
-        return null;
+        BinaryNode<E> target = this.deleteHelper(elem, this.root);
+        if(target != null) {
+            BinaryNode<E> parent = target.parent();
+
+            //Target is Root
+            if(parent == null) {
+                if(target.hasRight()) {
+                    //Find home for target.left
+                    BinaryNode<E> rightChild = target.right();
+                    if(rightChild.hasLeft()) {
+                        BinaryNode<E> leftTree = rightChild.left();
+                        while(leftTree.hasLeft()) {
+                            leftTree.setHeight(leftTree.height() + target.left().height());
+                            leftTree = leftTree.left();
+                        }
+
+                        leftTree.setLeft(target.left());
+                    }
+
+                    this.root = target.right();
+                    this.height = this.root.height();
+                } else if(target.hasLeft()) {
+                    this.root = target.left();
+                    this.height = this.root.height();
+                } else {
+                    this.root = null;
+                    this.height = 0;
+                    this.size = 0;
+                }
+            } else {
+                int flag = parent.compareTo(target);
+
+                //Target is RightChild
+                if(flag > 0) {
+                    if(target.hasLeft()) {
+                        //Reassign Parent's right child to target.left tree
+                        parent.setRight(target.left());
+                        target.left().setParent(parent);
+
+                        //Find Rightmost Home for Target.right
+                        if(target.hasRight()) {
+                            BinaryNode<E> leftTargetTree = target.left();
+
+                            while(leftTargetTree.hasRight()) {
+                                leftTargetTree.setHeight(leftTargetTree.height() + target.right().height());
+                                leftTargetTree = leftTargetTree.right();
+                            }
+                            //Place target.right in Home
+                            leftTargetTree.setRight(target.right());
+                            target.right().setParent(leftTargetTree);
+                        }
+                    } else {
+                        //Target Left Empty
+                        //Replace Parent.right with Target.right
+                        parent.setRight(target.right());
+                        target.right().setParent(parent);
+                    }
+                }
+                //Target is Left Child
+                if(flag < 0) {
+                    if(target.hasRight()) {
+                        //Reassign parent's Left-child to target.right tree
+                        parent.setLeft(target.right());
+                        target.right().setParent(parent);
+                        if(target.hasLeft()) {
+                            BinaryNode<E> rightTargetTree = target.right();
+
+                            //Find leftMost Home for Target.left
+                            while(rightTargetTree.hasLeft()) {
+                                rightTargetTree.setHeight(rightTargetTree.height() + target.left().height());
+                                rightTargetTree = rightTargetTree.left();
+                            }
+                            //Place Target.left in home
+                            rightTargetTree.setLeft(target.left());
+                            target.left().setParent(rightTargetTree);
+                        }
+                    } else {
+                        //Target.right empty
+                        //Replace parent left child with target.leftChild
+                        parent.setLeft(target.left());
+                        target.left().setParent(parent);
+                    }
+                }
+            }
+        }
+
+        return target;
     }
     public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
         BinaryNode<E> target = null;
+        if(curr == null) {
+            return null;
+        }
         if(curr.data() == elem) {
             target = curr;
         } else {

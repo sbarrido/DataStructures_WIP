@@ -61,6 +61,8 @@ public class BinaryNode<E extends Comparable<E>> implements TreePrinter.Printabl
         boolean balance = false;
         if(leftHeight <= 2 && rightHeight <= 2 ) {
             balance = Math.abs(leftHeight - rightHeight) < 2;
+        } else {
+            return this.left.isBalanced() && this.right.isBalanced();
         }
 
         return balance;
