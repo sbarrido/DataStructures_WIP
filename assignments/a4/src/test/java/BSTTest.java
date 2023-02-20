@@ -30,6 +30,7 @@ public class BSTTest {
     }
     @Test
     void insertTest() {
+        //Insert empty
         intTree.insert(5);
         assertEquals(true, intTree.root() instanceof BinaryNode<Integer>);
         assertEquals(5, intTree.root().data());
@@ -37,7 +38,7 @@ public class BSTTest {
         assertEquals(1, intTree.size());
         assertEquals(true, intTree.isBalanced());
 
-        //Insert to root left
+        //Insert to root.left
         strTree.insert("THICC");
         assertEquals(true, rootStr.data().compareTo("THICC") < 0);
         assertEquals("THICC", strTree.root().left().data());
@@ -45,21 +46,52 @@ public class BSTTest {
         assertEquals(2, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
-        //Insert to root right
-        strTree.insert("Quiz");
-        assertEquals(true, rootStr.data().compareTo("Quiz") > 0);
-        assertEquals("Quiz", strTree.root().right().data());
+        //insert to root.left.left
+        strTree.insert("apple");
+        assertEquals(true, "THICC".compareTo("apple") < 0);
         assertEquals(3, strTree.height());
         assertEquals(3, strTree.size());
-        assertEquals(true, strTree.isBalanced());
+        assertEquals(false, strTree.isBalanced());
 
-        //insert to root left child's left
-        strTree.insert("apple");
-        assertEquals(4, strTree.height());
+        //insert to root.right
+        strTree.insert("Answer");
+        assertEquals(true, "Start".compareTo("Answer") > 0);
+        assertEquals("Answer", strTree.root().right().data());
+        assertEquals(3, strTree.height());
         assertEquals(4, strTree.size());
         assertEquals(true, strTree.isBalanced());
-        System.out.println(strTree.root().left().data().compareTo("apple"));
 
+        //Insert root.left.left.left
+        strTree.insert("z");
+        assertEquals(true, "Start".compareTo("z") < 0);
+        assertEquals("z", strTree.root().left().left().left().data());
+        assertEquals(4, strTree.height());
+        assertEquals(5, strTree.size());
+        assertEquals(false, strTree.isBalanced());
+
+        //Insert to root.right.left
+        strTree.insert("Quiz");
+        assertEquals(true, "Answer".compareTo("Quiz") < 0);
+        assertEquals(4, strTree.height());
+        assertEquals(6, strTree.size());
+        assertEquals(false, strTree.isBalanced());
+
+        //insert to root.right.right
+        strTree.insert("ABOUND");
+        assertEquals(true, "Start".compareTo("ABOUND") > 0);
+        assertEquals(true, "Answer".compareTo("ABOUND") > 0);
+        assertEquals(4, strTree.height());
+        assertEquals(7, strTree.size());
+        assertEquals(false, strTree.isBalanced());
+
+        //insert to root.left.right
+        strTree.insert("THANK");
+        assertEquals(true, "Start".compareTo("THANK") < 0);
+        assertEquals(true, "THICC".compareTo("THANK") > 0);
+        assertEquals("THANK", strTree.root().left().right().data());
+        assertEquals(4, strTree.height());
+        assertEquals(8, strTree.size());
+        assertEquals(true, strTree.isBalanced());
     }
     @Test
     void searchTest() {

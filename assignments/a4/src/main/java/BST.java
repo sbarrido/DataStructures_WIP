@@ -52,7 +52,11 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         }
 
         int newHeight = Math.max(lHeight, rHeight);
-        this.height = newHeight + 1;
+        if(newHeight != this.height) {
+            this.height = newHeight + 1;
+        } else {
+            this.height = root.height();
+        }
     }
 
     // Traversals that return lists
@@ -120,6 +124,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             this.height++;
         } else {
             this.insertHelper(elem, this.root);
+            this.size++;
+            this.updateHeight();
         }
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
@@ -132,8 +138,6 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             //else, travel to leftChild
             if(curr.left() == null) {
                 curr.setLeft(new BinaryNode<>(elem));
-                this.size++;
-                this.updateHeight();
             } else {
                 this.insertHelper(elem, curr.left());
             }
@@ -145,12 +149,12 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             //else travel to right
             if(curr.right() == null) {
                 curr.setRight(new BinaryNode<>(elem));
-                this.size++;
-                this.updateHeight();
             } else {
                 this.insertHelper(elem, curr.right());
             }
         }
+
+        curr.setHeight(curr.height() + 1);
     }
 
     //TODO : delete
