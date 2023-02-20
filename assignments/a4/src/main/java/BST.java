@@ -14,7 +14,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         this.size = 0;
     }
 
-    // TODO: BST
+    // BST
     public BST(BinaryNode<E> root){
         this.root = root;
         this.height = 1;
@@ -37,9 +37,21 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         return root.isBalanced();
     }
 
-    // TODO: updateHeight - Update the root height to reflect any changes
+    // updateHeight - Update the root height to reflect any changes
     public void updateHeight() {
-        int newHeight = Math.max(this.root.left().height(), this.root.right().height());
+        int lHeight, rHeight;
+        if(this.root.hasRight()) {
+            rHeight = this.root.right().height();
+        } else {
+            rHeight = 0;
+        }
+        if(this.root.hasLeft()) {
+            lHeight = this.root.left().height();
+        } else {
+            lHeight = 0;
+        }
+
+        int newHeight = Math.max(lHeight, rHeight);
         this.height = newHeight + 1;
     }
 
@@ -66,23 +78,25 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     }
 
     // Helpers for BST/AVL methods
-    // TODO: extractRightMost
+    //TODO: extractRightMost
     //    This will be called on the left subtree and will get the maximum value.
     public BinaryNode<E> extractRightMost(BinaryNode<E> curNode) {
-        BinaryNode<E> rightChild = curNode.right();
-        BinaryNode<E> target;
+        BinaryNode<E> target = null;
+        if(curNode != null) {
+            BinaryNode<E> rightChild = curNode.right();
 
-        if(rightChild == null) {
-            target = curNode;
-        } else {
-            return this.extractRightMost(rightChild);
+            if(rightChild == null) {
+                target = curNode;
+            } else {
+                return this.extractRightMost(rightChild);
+            }
         }
 
         return target;
     }
 
     // AVL & BST Search & insert same
-    // TODO: search
+    //TODO: search
     public BinaryNode<E> search(E elem) {
         return searchHelper(elem, this.root);
     }
@@ -98,9 +112,15 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
         return target;
     }
-    // TODO: insert
+    //TODO: insert
     public void insert(E elem) {
-        this.insertHelper(elem, this.root);
+        if(this.root == null) {
+            this.root = new BinaryNode<E>(elem);
+            this.size++;
+            this.height++;
+        } else {
+            this.insertHelper(elem, this.root);
+        }
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
         int flag = curr.data().compareTo(elem);
@@ -112,6 +132,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             //else, travel to leftChild
             if(curr.left() == null) {
                 curr.setLeft(new BinaryNode<>(elem));
+                this.size++;
+                this.updateHeight();
             } else {
                 this.insertHelper(elem, curr.left());
             }
@@ -123,13 +145,15 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             //else travel to right
             if(curr.right() == null) {
                 curr.setRight(new BinaryNode<>(elem));
+                this.size++;
+                this.updateHeight();
             } else {
                 this.insertHelper(elem, curr.right());
             }
         }
     }
 
-    // TODO: delete
+    //TODO : delete
     public BinaryNode<E> delete(E elem) {
         return null;
     }
