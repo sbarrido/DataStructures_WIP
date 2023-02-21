@@ -233,19 +233,30 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                 - reduce height of curr
          */
         int flag = elem.compareTo(curr.data());
+        if(flag < 0) {
+            // recurse: elem is smaller than curr.data
+            return deleteHelper(elem, curr.left());
+        }
+        if(flag > 0) {
+            //recurse: elem is bigger than curr.data
+            return deleteHelper(elem, curr.right());
+        }
         if(flag == 0) {
             //EXECUTE ORDER 66
             BinaryNode<E> parent = curr.parent();
             if(parent == null) {
                 //CURR IS ROOT
                 if(curr.hasLeft() || curr.hasRight()) {
-                    this.root = extractRightMost(curr);
+                    if(curr.hasLeft()) { this.root = extractRightMost(curr.left()); }
+                    if(curr.hasRight()) { this.root = extractRightMost(curr.right()); }
+
+                    updateHeight();
+                    this.height = this.root.height();
                 } else {
                     this.root = null;
+                    this.height = 0;
                 }
 
-                this.size--;
-                this.height--;
             } else {
                 if(!curr.hasRight() && !curr.hasLeft()) {
                     //CURR NO CHILDREN
@@ -254,8 +265,12 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                     if(parentFlag < 0) { parent.setLeft(null); }
                 } else {
                     //CURR HAS CHILDREN
-                    BinaryNode<E> rightMost = extractRightMost(curr);
-
+                    BinaryNode<E> rightMost = null;
+                    if(curr.hasLeft()) {
+                        rightMost = extractRightMost(curr.left());
+                    } else if (curr.hasRight()) {
+                        rightMost = extractRightMost(curr.right());
+                    }
                     //find which child of parent
                     int parentFlag = rightMost.data().compareTo(parent.data());
                     if(parentFlag > 0) { parent.setRight(rightMost); }
@@ -264,26 +279,25 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                     //Assign rightMost.right = curr.right IFF not itself
                     if(rightMost.compareTo(curr.right()) != 0) {
                         rightMost.setRight(curr.right());
-                        curr.right().setParent(rightMost);
+                        if(curr.right() != null) {
+                            curr.right().setParent(rightMost);
+                        }
                     }
 
                     //IF rightMost.parent != curr
                     // LeftMost(rightMost) = rightMost.parent
                     if(rightMost.parent() != curr) {
-                        extractLeftMost(rightMost).setLeft(rightMost.parent());
+                        if(extractLeftMost(rightMost).compareTo(rightMost) != 0) {
+                            extractLeftMost(rightMost).setLeft(rightMost.parent());
+                        }
                     }
                 }
-
             }
-            if(flag < 0) {
-                // recurse: elem is smaller than curr.data
-                return deleteHelper(elem, curr.left());
+            this.size--;
+            this.updateHeight();
+            if(this.root != null) {
+                this.height = this.root.height();
             }
-            if(flag > 0) {
-                //recurse: elem is bigger than curr.data
-                return deleteHelper(elem, curr.right());
-            }
-
         }
 
         //*Extracted

@@ -179,15 +179,37 @@ public class BSTTest {
         assertEquals(3, strTree.height());
         assertEquals(true, strTree.isBalanced());
 
-        //Delete Leaf
+        //Delete Mid - left
         assertEquals("Answer", strTree.delete("Answer").data());
+        assertEquals("Ab", strTree.root().left().data());
+        assertEquals(6, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals(true, strTree.isBalanced());
+
+        //Delete Leaf
+        assertEquals("Answers", strTree.delete("Answers").data());
+        assertEquals("Ab", strTree.root().left().data());
+        assertEquals(5, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals(true, strTree.isBalanced());
+
+        //Delete Leaf - unbalance
+        assertEquals("Ab", strTree.delete("Ab").data());
+        assertEquals(null, strTree.root().left());
+        assertEquals(4, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals(false, strTree.isBalanced());
+
+        //Delete Leaf - unbalce
+        assertEquals("apple", strTree.delete("apple").data());
+        assertEquals("THICC", strTree.root().right().data());
         assertEquals(3, strTree.size());
         assertEquals(3, strTree.height());
         assertEquals(false, strTree.isBalanced());
 
-        //Delete Mid
+        //Delete Leaf - mid only 1 child - reblance
         assertEquals("THICC", strTree.delete("THICC").data());
-        assertEquals("apple", strTree.root().left().data());
+        assertEquals("THE", strTree.root().right().data());
         assertEquals(2, strTree.size());
         assertEquals(2, strTree.height());
         assertEquals(true, strTree.isBalanced());
