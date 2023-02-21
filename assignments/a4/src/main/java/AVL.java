@@ -46,27 +46,89 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         return root.isBalanced();
     }
 
-    // TODO: updateHeight - same as BST
+    //  updateHeight - same as BST
     public void updateHeight() {
+        int lHeight, rHeight;
+        if(this.root.hasRight()) {
+            rHeight = this.root.right().height();
+        } else {
+            rHeight = 0;
+        }
+        if(this.root.hasLeft()) {
+            lHeight = this.root.left().height();
+        } else {
+            lHeight = 0;
+        }
 
+        int newHeight = Math.max(lHeight, rHeight);
+
+        if(newHeight != this.root.height()) {
+            this.height = newHeight + 1;
+        } else {
+            this.height = newHeight;
+        }
+
+        this.root.setHeight(this.height);
     }
 
     // Traversals that return lists
-    // TODO: Preorder traversal
+    // Preorder traversal
     public List<E> preOrderList() {
-        return new ArrayList<>();
-    }
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) preOrderHelper(this.root, curr);
 
-    // TODO: Inorder traversal
+        return target;
+    }
+    public List<E> preOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
+        //Node - Left - Right
+        if(node != null) {
+            target.add(node.data());
+        }
+        if(node.hasLeft()) {preOrderHelper(node.left(), target);}
+        if(node.hasRight()) { preOrderHelper(node.right(), target); }
+
+        return target;
+    }
+    // Inorder traversal
     public List<E> inOrderList() {
-        return new ArrayList<>();
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) inOrderHelper(this.root, curr);
+
+        return target;
     }
 
-    // TODO: Postorder traversal
+    public List<E> inOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
+
+        //Node - Left - Right
+        if(node.hasLeft()) { inOrderHelper(node.left(), target); }
+        if(node != null) {
+            target.add(node.data());
+        }
+        if(node.hasRight()) { inOrderHelper(node.right(), target); }
+
+        return target;
+    }
+    // Postorder traversal
     public List<E> postOrderList() {
-        return new ArrayList<>();
-    }
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) postOrderHelper(this.root, curr);
 
+        return target;
+    }
+    public List<E> postOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
+
+        //Node - Left - Right
+        if(node.hasLeft()) { postOrderHelper(node.left(), target); }
+        if(node.hasRight()) { postOrderHelper(node.right(), target); }
+        if(node != null) {
+            target.add(node.data());
+        }
+
+        return target;
+    }
 
     /*
     TODO: rotateRight
@@ -79,6 +141,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
      * Make sure you increment the RRotations.
     */
     public void rotateRight(BinaryNode<E> node){
+
     }
 
     /*
@@ -121,15 +184,39 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
 
 
     // Helpers for BST/AVL methods
-    // TODO: extractRightMost - identical to BST
+    // extractRightMost - identical to BST
     public BinaryNode<E> extractRightMost(BinaryNode<E> curNode) {
-        return null;
+        BinaryNode<E> target = null;
+        if(curNode != null) {
+            BinaryNode<E> rightChild = curNode.right();
+
+            if(rightChild == null) {
+                target = curNode;
+            } else {
+                return this.extractRightMost(rightChild);
+            }
+        }
+
+        return target;
     }
 
     // AVL & BST Search & insert same
-    // TODO: search - identical to BST
+    //  search - identical to BST
     public BinaryNode<E> search(E elem) {
-        return null;
+        return searchHelper(elem, this.root);
+    }
+
+    public BinaryNode<E> searchHelper(E elem, BinaryNode<E> curr) {
+        BinaryNode<E> target = curr;
+        if(curr == null) {
+            return null;
+        }
+
+        int flag = target.data().compareTo(elem);
+        if(flag < 0) return searchHelper(elem, target.left());
+        if(flag > 0) return searchHelper(elem, target.right());
+
+        return target;
     }
 
     /*
