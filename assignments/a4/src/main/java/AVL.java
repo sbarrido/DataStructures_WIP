@@ -50,29 +50,17 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
 
     //  updateHeight - same as BST
     public void updateHeight() {
-        int lHeight, rHeight;
-        if(this.root.hasRight()) {
-            rHeight = this.root.right().height();
-        } else {
-            rHeight = 0;
-        }
-        if(this.root.hasLeft()) {
-            lHeight = this.root.left().height();
-        } else {
-            lHeight = 0;
-        }
-
-        int newHeight = Math.max(lHeight, rHeight);
-
-        if(newHeight != this.root.height()) {
-            this.height = newHeight + 1;
-        } else {
-            this.height = newHeight;
-        }
-
-        this.root.setHeight(this.height);
+        this.heightHelper(this.root);
     }
+    private void heightHelper(BinaryNode<E> node) {
+        int lHeight = 0;
+        int rHeight = 0;
+        if(node == null) return;
+        if(node.hasLeft()) { lHeight = node.left().height(); }
+        if(node.hasRight()) { rHeight = node.right().height(); }
 
+        node.setHeight(Math.max(lHeight, rHeight) + 1);
+    }
     // Traversals that return lists
     // Preorder traversal
     public List<E> preOrderList() {
@@ -101,16 +89,15 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     }
 
     public List<E> inOrderHelper(BinaryNode<E> node, List<E> curr) {
-        ArrayList<E> target = (ArrayList<E>) curr;
 
         //Node - Left - Right
-        if(node.hasLeft()) { inOrderHelper(node.left(), target); }
+        if(node.hasLeft()) { inOrderHelper(node.left(), curr); }
         if(node != null) {
-            target.add(node.data());
+            curr.add(node.data());
         }
-        if(node.hasRight()) { inOrderHelper(node.right(), target); }
+        if(node.hasRight()) { inOrderHelper(node.right(), curr); }
 
-        return target;
+        return curr;
     }
     // Postorder traversal
     public List<E> postOrderList() {
@@ -120,16 +107,14 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         return target;
     }
     public List<E> postOrderHelper(BinaryNode<E> node, List<E> curr) {
-        ArrayList<E> target = (ArrayList<E>) curr;
-
         //Node - Left - Right
-        if(node.hasLeft()) { postOrderHelper(node.left(), target); }
-        if(node.hasRight()) { postOrderHelper(node.right(), target); }
+        if(node.hasLeft()) { postOrderHelper(node.left(), curr); }
+        if(node.hasRight()) { postOrderHelper(node.right(), curr); }
         if(node != null) {
-            target.add(node.data());
+            curr.add(node.data());
         }
 
-        return target;
+        return curr;
     }
 
     /*
@@ -177,10 +162,10 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         BinaryNode<E> adoptedLeftTree = rightChild.left();
 
         if(adoptedLeftTree != null) {
+            node.setRight(adoptedLeftTree);
             adoptedLeftTree.setParent(node);
         }
-        node.setRight(adoptedLeftTree);
-        node.setParent(rightChild);
+
         rightChild.setLeft(node);
 
         if(this.root == node) {
@@ -255,8 +240,8 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     // Helpers for BST/AVL methods
     // extractRightMost - identical to BST
     public BinaryNode<E> extractRightMost(BinaryNode<E> curNode) {
-        BinaryNode<E> target = null;
-        if(curNode != null) {
+        BinaryNode<E> target = curNode;
+        if(target != null) {
             BinaryNode<E> rightChild = curNode.right();
 
             if(rightChild == null) {
@@ -268,7 +253,20 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
 
         return target;
     }
+    public BinaryNode<E> extractLeftMost(BinaryNode<E> curNode) {
+        BinaryNode<E> target = curNode;
+        if(target != null) {
+            BinaryNode<E> leftChild = curNode.left();
 
+            if(leftChild == null) {
+                target = curNode;
+            } else {
+                return this.extractLeftMost(leftChild);
+            }
+        }
+
+        return target;
+    }
     // AVL & BST Search & insert same
     //  search - identical to BST
     public BinaryNode<E> search(E elem) {
@@ -276,16 +274,15 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     }
 
     public BinaryNode<E> searchHelper(E elem, BinaryNode<E> curr) {
-        BinaryNode<E> target = curr;
         if(curr == null) {
-            return null;
+            return curr;
         }
 
-        int flag = target.data().compareTo(elem);
-        if(flag < 0) return searchHelper(elem, target.left());
-        if(flag > 0) return searchHelper(elem, target.right());
+        int flag = elem.compareTo(curr.data());
+        if(flag < 0) return searchHelper(elem, curr.left());
+        if(flag > 0) return searchHelper(elem, curr.right());
 
-        return target;
+        return curr;
     }
 
     /*
@@ -293,51 +290,55 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: mkBalanced will be your best friend here.
     */
     public void insert(E elem) {
-        //Empty Case
         if(this.root == null) {
-            this.root = new BinaryNode<>(elem);
-            this.size++;
-            this.height++;
+            this.root = new BinaryNode<E>(elem);
         } else {
-            this.insertHelper(elem, this.root());
-            this.size++;
-            this.updateHeight();
+            this.insertHelper(elem, this.root);
         }
-        //Non-Empty
+
+        this.size = this.root.size();
+        this.updateHeight();
+        this.height = this.root.height();
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
-        int flag = curr.data().compareTo(elem);
-
-        if(flag < 0){
-            //Check Left
-
-            if(!curr.hasLeft()) {
-                //Empty Left - insert
-                curr.setLeft(new BinaryNode<>(elem, null, null, curr));
-                if(!curr.hasRight()) {
-                    curr.setHeight(curr.height() + 1);
-                }
-            } else {
-                //Non-empty left
+       /* ORGANIZING MY THOUGHTS THAT ARE HANGING BY A THREAD
+        flag < 0 : elem is smaller than current data
+              1. Curr.Left = null; empty
+                  1a. Insert New Node - data: elem, children: null, parent: curr
+                  *2a. Increase curr.size
+                  *3a. Increase curr.height
+              2. Non-Empty;
+                  1a. Recursive Call - push curr.left
+                  *2a. Increase curr.size
+                  *3a. Increase curr.height
+         flag > 0 : elem is bigger than current data
+               Reflection of above
+               * <- denotes extract outside
+         */
+        int flag = elem.compareTo(curr.data());
+        if(flag < 0) {
+            if(curr.hasLeft()) {
                 //recursive
-                curr.setHeight(curr.height() + 1);
-                this.insertHelper(elem, curr.left());
-            }
-        } else if(flag > 0) {
-            //Check Right
-            if(!curr.hasRight()) {
-                //Empty Right - insert
-                curr.setRight(new BinaryNode<>(elem, null, null, curr));
-                if(!curr.hasLeft()) {
-                    curr.setHeight(curr.height() + 1);
-                }
+                insertHelper(elem, curr.left());
             } else {
-                //Non-empty Right
-                //Recurisve
-                curr.setHeight(curr.height() + 1);
-                this.insertHelper(elem, curr.right());
+                //Insert
+                curr.setLeft(new BinaryNode<>(elem, null, null, curr));
+            }
+
+        }
+        if(flag > 0) {
+            if(curr.hasRight()) {
+                //recursive
+                insertHelper(elem, curr.right());
+            } else {
+                //Insert
+                curr.setRight(new BinaryNode<>(elem, null, null, curr));
             }
         }
+
+        // * extracted
+        this.heightHelper(curr);
+        curr.setSize(curr.size() + 1);
         this.mkBalanced(curr);
     }
 
@@ -346,131 +347,113 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: mkBalanced will be your best friend here.
     */
     public BinaryNode<E> delete(E elem) {
-        BinaryNode<E> target = this.deleteHelper(elem, this.root);
-        if(target != null) {
-            BinaryNode<E> parent = target.parent();
-
-            //Target is Root
-            if(parent == null) {
-                if(target.hasRight()) {
-                    //Find home for target.left
-                    BinaryNode<E> rightChild = target.right();
-                    if(rightChild.hasLeft()) {
-                        BinaryNode<E> leftTree = rightChild.left();
-                        while(leftTree.hasLeft()) {
-                            leftTree.setHeight(leftTree.height() + target.left().height());
-                            leftTree = leftTree.left();
-                        }
-
-                        leftTree.setLeft(target.left());
-                    }
-
-                    this.root = target.right();
-                    this.height = this.root.height();
-                } else if(target.hasLeft()) {
-                    this.root = target.left();
-                    this.height = this.root.height();
-                } else {
-                    this.root = null;
-                    this.height = 0;
-                    this.size = 0;
-                }
-            } else {
-                int flag = parent.compareTo(target);
-
-                //Target is RightChild
-                if(flag > 0) {
-                    if(target.hasLeft()) {
-                        //Reassign Parent's right child to target.left tree
-                        this.size--;
-                        parent.setHeight(parent.height() - 1);
-                        parent.setRight(target.left());
-                        target.left().setParent(parent);
-
-                        //Find Rightmost Home for Target.right
-                        if(target.hasRight()) {
-                            BinaryNode<E> leftTargetTree = target.left();
-
-                            while(leftTargetTree.hasRight()) {
-                                leftTargetTree.setHeight(leftTargetTree.height() + target.right().height());
-                                leftTargetTree = leftTargetTree.right();
-                            }
-                            //Place target.right in Home
-                            leftTargetTree.setRight(target.right());
-                            target.right().setParent(leftTargetTree);
-                        }
-                    } else {
-                        //Target Left Empty
-                        //Replace Parent.right with Target.right
-                        this.size--;
-                        parent.setRight(target.right());
-                        if(target.right() != null) {
-                            target.right().setParent(parent);
-                        }
-                    }
-                }
-                //Target is Left Child
-                if(flag < 0) {
-                    if(target.hasRight()) {
-                        //Reassign parent's Left-child to target.right tree
-                        this.size--;
-                        parent.setHeight(parent.height() - 1);
-                        parent.setLeft(target.right());
-                        target.right().setParent(parent);
-                        if(target.hasLeft()) {
-                            BinaryNode<E> rightTargetTree = target.right();
-
-                            //Find leftMost Home for Target.left
-                            while(rightTargetTree.hasLeft()) {
-                                rightTargetTree.setHeight(rightTargetTree.height() + target.left().height());
-                                rightTargetTree = rightTargetTree.left();
-                            }
-                            //Place Target.left in home
-                            rightTargetTree.setLeft(target.left());
-                            target.left().setParent(rightTargetTree);
-                        }
-                    } else {
-                        //Target.right empty
-                        //Replace parent left child with target.leftChild
-                        this.size--;
-                        parent.setLeft(target.left());
-                        target.left().setParent(parent);
-                    }
-                }
-            }
-        }
-
+        BinaryNode<E> target = null;
         if(this.root != null) {
+            target = this.deleteHelper(elem, this.root);
             this.updateHeight();
         }
         return target;
     }
 
     public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
-        BinaryNode<E> target = curr;
-        if(curr == null) {
-            return null;
+       /* ORGANIZING MY THOUGHTS FOR THE HELL THAT IS DELETION
+            flag == 0: EXCECUTE ORDER 66
+                1. CURR NO CHILDREN
+                    A. FIND PARENT.child = CURR set to NULL
+                2. CURR HAS CHILDREN
+                    A. extractRightMost(curr) : find furthest right Node
+                        a. PARENT.child = rightMostNode ; FIND WHICH CHILD
+                        b. rightMostNode.right = curr.Right IFF not itself
+                        d. if rightMostNode.parent != curr
+                            d1. LeftMost of rightMost = rightMost.parent
+            flag < 0 elem is smaller than curr.data
+                1. recursive call - curr.left
+            flag > 0 elem is bigger than curr.data
+                1. recursive call - curr.right
+
+            *EXCTRACT OUT:
+                - reduce size of curr
+                - reduce height of curr
+         */
+        int flag = elem.compareTo(curr.data());
+        if(flag < 0) {
+            // recurse: elem is smaller than curr.data
+            return deleteHelper(elem, curr.left());
         }
-        if(curr.data() == elem) {
-            target = curr;
-        } else {
-            //Check Children
-            int flag = curr.data().compareTo(elem);
-            if(flag > 0) {
-                //right child
-                if(curr.hasRight()) {
-                    return this.deleteHelper(elem, curr.right());
+        if(flag > 0) {
+            //recurse: elem is bigger than curr.data
+            return deleteHelper(elem, curr.right());
+        }
+        if(flag == 0) {
+            //EXECUTE ORDER 66
+            BinaryNode<E> parent = curr.parent();
+            if(parent == null) {
+                //CURR IS ROOT
+                if(curr.hasLeft() || curr.hasRight()) {
+                    if(curr.hasLeft()) { this.root = extractRightMost(curr.left()); }
+                    if(curr.hasRight()) { this.root = extractRightMost(curr.right()); }
+
+                    updateHeight();
+                    this.height = this.root.height();
+                } else {
+                    this.root = null;
+                    this.height = 0;
+                }
+
+            } else {
+                if(!curr.hasRight() && !curr.hasLeft()) {
+                    //CURR NO CHILDREN
+                    int parentFlag = curr.data().compareTo(parent.data());
+                    if(parentFlag > 0) { parent.setRight(null); }
+                    if(parentFlag < 0) { parent.setLeft(null); }
+                } else {
+                    //CURR HAS CHILDREN
+                    BinaryNode<E> rightMost = null;
+                    if(curr.hasLeft()) {
+                        rightMost = extractRightMost(curr.left());
+                    } else if (curr.hasRight()) {
+                        rightMost = extractRightMost(curr.right());
+                    }
+                    //find which child of parent
+                    int parentFlag = rightMost.data().compareTo(parent.data());
+                    if(parentFlag > 0) { parent.setRight(rightMost); }
+                    if(parentFlag < 0) { parent.setLeft(rightMost); }
+                    rightMost.setParent(parent);
+                    //Assign rightMost.right = curr.right IFF not itself
+                    if(rightMost.compareTo(curr.right()) != 0) {
+                        rightMost.setRight(curr.right());
+                        if(curr.right() != null) {
+                            curr.right().setParent(rightMost);
+                        }
+                    }
+
+                    //IF rightMost.parent != curr
+                    // LeftMost(rightMost) = rightMost.parent
+                    if(rightMost.parent() != curr) {
+                        if(extractLeftMost(rightMost).compareTo(rightMost) != 0) {
+                            extractLeftMost(rightMost).setLeft(rightMost.parent());
+                        }
+                    }
                 }
             }
-            if(flag < 0) {
-                //left child
-                if(curr.hasLeft()) {
-                    return this.deleteHelper(elem, curr.left());
-                }
+            this.size--;
+            this.updateHeight();
+            if(this.root != null) {
+                this.height = this.root.height();
             }
         }
 
-        return target;
+        //*Extracted
+        int lHeight = 0;
+        int rHeight = 0;
+
+        if(curr.hasLeft()) { lHeight = curr.left().height(); }
+        if(curr.hasRight()) { rHeight = curr.right().height(); }
+
+        curr.setHeight(Math.max(lHeight, rHeight) - 1);
+        curr.setSize(curr.size() - 1);
+        this.mkBalanced(curr);
+        return curr;
     }
     // Stuff to help you debug if you want
     // Can ignore or use to see if it works.
