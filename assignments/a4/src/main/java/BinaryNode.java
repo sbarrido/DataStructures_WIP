@@ -53,6 +53,7 @@ public class BinaryNode<E extends Comparable<E>> implements TreePrinter.Printabl
         return this.height;
     }
     int size() { return this.size; }
+    void setSize(int val) { this.size = val; }
     boolean isBalanced() {
         int leftHeight = (hasLeft()) ? left.height() : 0;
         int rightHeight = (hasRight()) ? right.height() : 0;
