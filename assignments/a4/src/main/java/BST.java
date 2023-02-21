@@ -65,25 +65,61 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     // Traversals that return lists
     // TODO: Preorder traversal
     public List<E> preOrderList() {
-        ArrayList<E> target = new ArrayList<>();
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) preOrderHelper(this.root, curr);
 
         return target;
     }
+    public List<E> preOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
+        //Node - Left - Right
+        if(node != null) {
+            target.add(node.data());
+        }
+        if(node.hasLeft()) {preOrderHelper(node.left(), target);}
+        if(node.hasRight()) { preOrderHelper(node.right(), target); }
 
+        return target;
+    }
     // TODO: Inorder traversal
     public List<E> inOrderList() {
-        ArrayList<E> target = new ArrayList<>();
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) inOrderHelper(this.root, curr);
 
         return target;
     }
 
+    public List<E> inOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
+
+        //Node - Left - Right
+        if(node.hasLeft()) { inOrderHelper(node.left(), target); }
+        if(node != null) {
+            target.add(node.data());
+        }
+        if(node.hasRight()) { inOrderHelper(node.right(), target); }
+
+        return target;
+    }
     // TODO: Postorder traversal
     public List<E> postOrderList() {
-        ArrayList<E> target = new ArrayList<>();
+        ArrayList<E> curr = new ArrayList<>();
+        ArrayList<E> target = (ArrayList<E>) postOrderHelper(this.root, curr);
 
         return target;
     }
+    public List<E> postOrderHelper(BinaryNode<E> node, List<E> curr) {
+        ArrayList<E> target = (ArrayList<E>) curr;
 
+        //Node - Left - Right
+       if(node.hasLeft()) { postOrderHelper(node.left(), target); }
+        if(node.hasRight()) { postOrderHelper(node.right(), target); }
+        if(node != null) {
+            target.add(node.data());
+        }
+
+        return target;
+    }
     // Helpers for BST/AVL methods
     //TODO: extractRightMost
     //    This will be called on the left subtree and will get the maximum value.
@@ -165,7 +201,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         }
     }
 
-    //TODO : delete
+    // delete
     public BinaryNode<E> delete(E elem) {
         BinaryNode<E> target = this.deleteHelper(elem, this.root);
         if(target != null) {

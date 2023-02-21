@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Duration;
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BSTTest {
@@ -166,5 +168,33 @@ public class BSTTest {
         assertEquals(2, strTree.size());
         assertEquals(2, strTree.height());
         assertEquals(true, strTree.isBalanced());
+    }
+    @Test
+    void orderingTest() {
+        // Start
+        // THICC ANSWER
+        //apple
+        loadStr();
+        ArrayList<String> pre = (ArrayList<String>) strTree.preOrderList();
+        ArrayList<String> in = (ArrayList<String>) strTree.inOrderList();
+        ArrayList<String> post = (ArrayList<String>) strTree.postOrderList();
+
+        //Pre
+        assertEquals("Start", pre.get(0));
+        assertEquals("THICC", pre.get(1));
+        assertEquals("apple", pre.get(2));
+        assertEquals("Answer", pre.get(3));
+
+        //in order
+        assertEquals("apple", in.get(0));
+        assertEquals("THICC", in.get(1));
+        assertEquals("Start", in.get(2));
+        assertEquals("Answer", in.get(3));
+
+        //Post
+        assertEquals("apple", post.get(0));
+        assertEquals("THICC", post.get(1));
+        assertEquals("Answer", post.get(2));
+        assertEquals("Start", post.get(3));
     }
 }
