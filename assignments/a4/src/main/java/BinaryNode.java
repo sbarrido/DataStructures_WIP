@@ -41,7 +41,7 @@ public class BinaryNode<E extends Comparable<E>> implements TreePrinter.Printabl
     E data() { return this.data; };
     BinaryNode<E> left() {
         return this.left;
-    }S
+    }
     BinaryNode<E> right() {
         return this.right;
     }
