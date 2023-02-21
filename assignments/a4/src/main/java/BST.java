@@ -42,7 +42,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     private void heightHelper(BinaryNode<E> node) {
         int lHeight = 0;
         int rHeight = 0;
-
+        if(node == null) return;
         if(node.hasLeft()) { lHeight = node.left().height(); }
         if(node.hasRight()) { rHeight = node.right().height(); }
 
@@ -205,7 +205,12 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
     // delete
     public BinaryNode<E> delete(E elem) {
-        return null;
+        BinaryNode<E> target = null;
+        if(this.root != null) {
+            target = this.deleteHelper(elem, this.root);
+            this.updateHeight();
+        }
+        return target;
     }
     public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
         /* ORGANIZING MY THOUGHTS FOR THE HELL THAT IS DELETION
@@ -231,41 +236,54 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         if(flag == 0) {
             //EXECUTE ORDER 66
             BinaryNode<E> parent = curr.parent();
-            if(!curr.hasRight() && !curr.hasLeft()) {
-                //CURR NO CHILDREN
-                int parentFlag = curr.data().compareTo(parent.data());
-                if(parentFlag > 0) { parent.setRight(null); }
-                if(parentFlag < 0) { parent.setLeft(null); }
+            if(parent == null) {
+                //CURR IS ROOT
+                if(curr.hasLeft() || curr.hasRight()) {
+                    this.root = extractRightMost(curr);
+                } else {
+                    this.root = null;
+                }
+
+                this.size--;
+                this.height--;
             } else {
-                //CURR HAS CHILDREN
-                BinaryNode<E> rightMost = extractRightMost(curr);
+                if(!curr.hasRight() && !curr.hasLeft()) {
+                    //CURR NO CHILDREN
+                    int parentFlag = curr.data().compareTo(parent.data());
+                    if(parentFlag > 0) { parent.setRight(null); }
+                    if(parentFlag < 0) { parent.setLeft(null); }
+                } else {
+                    //CURR HAS CHILDREN
+                    BinaryNode<E> rightMost = extractRightMost(curr);
 
-                //find which child of parent
-                int parentFlag = rightMost.data().compareTo(parent.data());
-                if(parentFlag > 0) { parent.setRight(rightMost); }
-                if(parentFlag < 0) { parent.setLeft(rightMost); }
-                rightMost.setParent(parent);
-                //Assign rightMost.right = curr.right IFF not itself
-                if(rightMost.compareTo(curr.right()) != 0) {
-                    rightMost.setRight(curr.right());
-                    curr.right().setParent(rightMost);
+                    //find which child of parent
+                    int parentFlag = rightMost.data().compareTo(parent.data());
+                    if(parentFlag > 0) { parent.setRight(rightMost); }
+                    if(parentFlag < 0) { parent.setLeft(rightMost); }
+                    rightMost.setParent(parent);
+                    //Assign rightMost.right = curr.right IFF not itself
+                    if(rightMost.compareTo(curr.right()) != 0) {
+                        rightMost.setRight(curr.right());
+                        curr.right().setParent(rightMost);
+                    }
+
+                    //IF rightMost.parent != curr
+                    // LeftMost(rightMost) = rightMost.parent
+                    if(rightMost.parent() != curr) {
+                        extractLeftMost(rightMost).setLeft(rightMost.parent());
+                    }
                 }
 
-                //IF rightMost.parent != curr
-                // LeftMost(rightMost) = rightMost.parent
-                if(rightMost.parent() != curr) {
-                    extractLeftMost(rightMost).setLeft(rightMost.parent());
-                }
+            }
+            if(flag < 0) {
+                // recurse: elem is smaller than curr.data
+                return deleteHelper(elem, curr.left());
+            }
+            if(flag > 0) {
+                //recurse: elem is bigger than curr.data
+                return deleteHelper(elem, curr.right());
             }
 
-        }
-        if(flag < 0) {
-            // recurse: elem is smaller than curr.data
-            deleteHelper(elem, curr.left());
-        }
-        if(flag > 0) {
-            //recurse: elem is bigger than curr.data
-            deleteHelper(elem, curr.right());
         }
 
         //*Extracted
