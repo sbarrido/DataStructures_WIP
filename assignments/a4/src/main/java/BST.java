@@ -90,16 +90,15 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     }
 
     public List<E> inOrderHelper(BinaryNode<E> node, List<E> curr) {
-        ArrayList<E> target = (ArrayList<E>) curr;
 
         //Node - Left - Right
-        if(node.hasLeft()) { inOrderHelper(node.left(), target); }
+        if(node.hasLeft()) { inOrderHelper(node.left(), curr); }
         if(node != null) {
-            target.add(node.data());
+            curr.add(node.data());
         }
-        if(node.hasRight()) { inOrderHelper(node.right(), target); }
+        if(node.hasRight()) { inOrderHelper(node.right(), curr); }
 
-        return target;
+        return curr;
     }
     // TODO: Postorder traversal
     public List<E> postOrderList() {
@@ -109,16 +108,14 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         return target;
     }
     public List<E> postOrderHelper(BinaryNode<E> node, List<E> curr) {
-        ArrayList<E> target = (ArrayList<E>) curr;
-
         //Node - Left - Right
-       if(node.hasLeft()) { postOrderHelper(node.left(), target); }
-        if(node.hasRight()) { postOrderHelper(node.right(), target); }
+       if(node.hasLeft()) { postOrderHelper(node.left(), curr); }
+        if(node.hasRight()) { postOrderHelper(node.right(), curr); }
         if(node != null) {
-            target.add(node.data());
+            curr.add(node.data());
         }
 
-        return target;
+        return curr;
     }
     // Helpers for BST/AVL methods
     //TODO: extractRightMost
