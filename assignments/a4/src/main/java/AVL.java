@@ -1,3 +1,5 @@
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -141,7 +143,22 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
      * Make sure you increment the RRotations.
     */
     public void rotateRight(BinaryNode<E> node){
+        BinaryNode<E> leftChild = node.left();
+        BinaryNode<E> adoptedRightTree = leftChild.right();
 
+        if(adoptedRightTree!= null) {
+            adoptedRightTree.setParent(node);
+        }
+        node.setLeft(adoptedRightTree);
+        node.setParent(leftChild);
+        leftChild.setRight(node);
+        if(this.root == node) {
+            node.setHeight(node.height() - 1);
+            this.root = leftChild;
+            this.updateHeight();
+        }
+
+        this.RRotations++;
     }
 
     /*
@@ -156,6 +173,22 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Symmetrical to above.
      */
     public void rotateLeft(BinaryNode<E> node){
+        BinaryNode<E> rightChild = node.right();
+        BinaryNode<E> adoptedLeftTree = rightChild.left();
+
+        if(adoptedLeftTree != null) {
+            adoptedLeftTree.setParent(node);
+        }
+        node.setRight(adoptedLeftTree);
+        node.setParent(rightChild);
+        rightChild.setLeft(node);
+
+        if(this.root == node) {
+            node.setHeight(node.height() - 1);
+            this.root = rightChild;
+            this.updateHeight();
+        }
+        this.LRotations++;
     }
 
     /*
@@ -164,6 +197,23 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * than the left subtree height, rotate right. Otherwise, don't do anything.
     */
     public void possibleRotateRight(BinaryNode<E> node){
+        boolean isBalanced = node.isBalanced();
+        int lHeight, rHeight;
+        if(!node.hasRight()) {
+            rHeight = 0;
+        } else {
+            rHeight = node.right().height();
+        }
+        if(!node.hasLeft()) {
+            lHeight = 0;
+        } else {
+            lHeight = node.left().height();
+        }
+        boolean bigLeft = lHeight > rHeight;
+
+        if(!isBalanced && bigLeft) {
+            rotateRight(node);
+        }
     }
 
     /*
@@ -172,6 +222,23 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * than the right subtree height, rotate left. Otherwise, don't do anything.
     */
     public void possibleRotateLeft(BinaryNode<E> node){
+        boolean isBalanced = node.isBalanced();
+        int lHeight, rHeight;
+        if(!node.hasRight()) {
+            rHeight = 0;
+        } else {
+            rHeight = node.right().height();
+        }
+        if(!node.hasLeft()) {
+            lHeight = 0;
+        } else {
+            lHeight = node.left().height();
+        }
+        boolean bigRight = rHeight > lHeight;
+
+        if(!isBalanced && bigRight) {
+            rotateLeft(node);
+        }
     }
 
     /*
@@ -180,6 +247,8 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: rotations!!!
     */
     public void mkBalanced(BinaryNode<E> node){
+        possibleRotateLeft(node);
+        possibleRotateRight(node);
     }
 
 
@@ -224,8 +293,53 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: mkBalanced will be your best friend here.
     */
     public void insert(E elem) {
+        //Empty Case
+        if(this.root == null) {
+            this.root = new BinaryNode<>(elem);
+            this.size++;
+            this.height++;
+        } else {
+            this.insertHelper(elem, this.root());
+            this.size++;
+            this.updateHeight();
+        }
+        //Non-Empty
     }
+    public void insertHelper(E elem, BinaryNode<E> curr) {
+        int flag = curr.data().compareTo(elem);
 
+        if(flag < 0){
+            //Check Left
+
+            if(!curr.hasLeft()) {
+                //Empty Left - insert
+                curr.setLeft(new BinaryNode<>(elem, null, null, curr));
+                if(!curr.hasRight()) {
+                    curr.setHeight(curr.height() + 1);
+                }
+            } else {
+                //Non-empty left
+                //recursive
+                curr.setHeight(curr.height() + 1);
+                this.insertHelper(elem, curr.left());
+            }
+        } else if(flag > 0) {
+            //Check Right
+            if(!curr.hasRight()) {
+                //Empty Right - insert
+                curr.setRight(new BinaryNode<>(elem, null, null, curr));
+                if(!curr.hasLeft()) {
+                    curr.setHeight(curr.height() + 1);
+                }
+            } else {
+                //Non-empty Right
+                //Recurisve
+                curr.setHeight(curr.height() + 1);
+                this.insertHelper(elem, curr.right());
+            }
+        }
+        this.mkBalanced(curr);
+    }
 
     /*
      TODO: delete - slightly different from BST but similar logic
