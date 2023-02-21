@@ -93,10 +93,10 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     }
     public BinaryNode<E> searchHelper(E elem, BinaryNode<E> curr) {
         if(curr == null) {
-            return null;
+            return curr;
         }
 
-        int flag = curr.data().compareTo(elem);
+        int flag = elem.compareTo(curr.data());
         if(flag < 0) return searchHelper(elem, curr.left());
         if(flag > 0) return searchHelper(elem, curr.right());
 
@@ -112,6 +112,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
         this.size = this.root.size();
         this.updateHeight();
+        this.height = this.root.height();
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
         /* ORGANIZING MY THOUGHTS THAT ARE HANGING BY A THREAD

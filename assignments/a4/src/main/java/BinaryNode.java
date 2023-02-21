@@ -18,8 +18,21 @@ public class BinaryNode<E extends Comparable<E>> implements TreePrinter.Printabl
         this.left = left;
         this.right = right;
         this.parent = parent;
-        this.height = Math.max(left.height, right.height) + 1;
-        this.size = left.size + right.size + 1;
+
+        int lHeight = 0;
+        int rHeight = 0;
+        int lSize = 0;
+        int rSize = 0;
+        if(left != null) {
+            lHeight = left.height;
+            lSize = left.size;
+        }
+        if(right != null) {
+            rHeight = right.height;
+            rSize = right.size;
+        }
+        this.height = Math.max(lHeight, rHeight) + 1;
+        this.size = lSize + rSize + 1;
     }
     // Access fields
     E data() { return this.data; };
