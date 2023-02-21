@@ -107,8 +107,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     //TODO: extractRightMost
     //    This will be called on the left subtree and will get the maximum value.
     public BinaryNode<E> extractRightMost(BinaryNode<E> curNode) {
-        BinaryNode<E> target = null;
-        if(curNode != null) {
+        BinaryNode<E> target = curNode;
+        if(target != null) {
             BinaryNode<E> rightChild = curNode.right();
 
             if(rightChild == null) {
@@ -120,7 +120,20 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
 
         return target;
     }
+    public BinaryNode<E> extractLeftMost(BinaryNode<E> curNode) {
+        BinaryNode<E> target = curNode;
+        if(target != null) {
+            BinaryNode<E> leftChild = curNode.left();
 
+            if(leftChild == null) {
+                target = curNode;
+            } else {
+                return this.extractLeftMost(leftChild);
+            }
+        }
+
+        return target;
+    }
     // AVL & BST Search & insert same
     // search
     public BinaryNode<E> search(E elem) {
@@ -195,7 +208,76 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         return null;
     }
     public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
-        return null;
+        /* ORGANIZING MY THOUGHTS FOR THE HELL THAT IS DELETION
+            flag == 0: EXCECUTE ORDER 66
+                1. CURR NO CHILDREN
+                    A. FIND PARENT.child = CURR set to NULL
+                2. CURR HAS CHILDREN
+                    A. extractRightMost(curr) : find furthest right Node
+                        a. PARENT.child = rightMostNode ; FIND WHICH CHILD
+                        b. rightMostNode.right = curr.Right IFF not itself
+                        d. if rightMostNode.parent != curr
+                            d1. LeftMost of rightMost = rightMost.parent
+            flag < 0 elem is smaller than curr.data
+                1. recursive call - curr.left
+            flag > 0 elem is bigger than curr.data
+                1. recursive call - curr.right
+
+            *EXCTRACT OUT:
+                - reduce size of curr
+                - reduce height of curr
+         */
+        int flag = elem.compareTo(curr.data());
+        if(flag == 0) {
+            //EXECUTE ORDER 66
+            BinaryNode<E> parent = curr.parent();
+            if(!curr.hasRight() && !curr.hasLeft()) {
+                //CURR NO CHILDREN
+                int parentFlag = curr.data().compareTo(parent.data());
+                if(parentFlag > 0) { parent.setRight(null); }
+                if(parentFlag < 0) { parent.setLeft(null); }
+            } else {
+                //CURR HAS CHILDREN
+                BinaryNode<E> rightMost = extractRightMost(curr);
+
+                //find which child of parent
+                int parentFlag = rightMost.data().compareTo(parent.data());
+                if(parentFlag > 0) { parent.setRight(rightMost); }
+                if(parentFlag < 0) { parent.setLeft(rightMost); }
+                rightMost.setParent(parent);
+                //Assign rightMost.right = curr.right IFF not itself
+                if(rightMost.compareTo(curr.right()) != 0) {
+                    rightMost.setRight(curr.right());
+                    curr.right().setParent(rightMost);
+                }
+
+                //IF rightMost.parent != curr
+                // LeftMost(rightMost) = rightMost.parent
+                if(rightMost.parent() != curr) {
+                    extractLeftMost(rightMost).setLeft(rightMost.parent());
+                }
+            }
+
+        }
+        if(flag < 0) {
+            // recurse: elem is smaller than curr.data
+            deleteHelper(elem, curr.left());
+        }
+        if(flag > 0) {
+            //recurse: elem is bigger than curr.data
+            deleteHelper(elem, curr.right());
+        }
+
+        //*Extracted
+        int lHeight = 0;
+        int rHeight = 0;
+
+        if(curr.hasLeft()) { lHeight = curr.left().height(); }
+        if(curr.hasRight()) { rHeight = curr.right().height(); }
+
+        curr.setHeight(Math.max(lHeight, rHeight) - 1);
+        curr.setSize(curr.size() - 1);
+        return curr;
     }
 
     // Stuff to help you debug if you want
