@@ -13,6 +13,15 @@ public class SearchEngine {
     // TODO: mode 3 = BST mode 4 = AVL
     public SearchEngine(int mode) throws IOException {
         this.mode = mode;
+
+        switch(this.mode) {
+            case 3:
+                nodeTree = new BST<>();
+                break;
+            case 4:
+                nodeTree = new AVL<>();
+                break;
+        }
     }
 
     public Tree<Node> getNodeTree(){
@@ -29,8 +38,20 @@ public class SearchEngine {
             Document doc = Jsoup.connect(url).get();
             String text = doc.body().text().toLowerCase();
             String[] words = text.split("\\s+"); // splits by whitespace
+            BST<Node> bst = null;
+            AVL<Node> avl = null;
+            if(this.mode == 3) {
+                bst = (BST) this.nodeTree;
+            } else {
+                avl = (AVL) this.nodeTree;
+            }
             for (String word : words) {
-                // HERE
+                if(bst != null) {
+                    bst.insert(new Node(word));
+                }
+                if(avl != null) {
+                    avl.insert(new Node(word));
+                }
             }
         }
         reader.close();

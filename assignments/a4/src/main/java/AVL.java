@@ -346,9 +346,132 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: mkBalanced will be your best friend here.
     */
     public BinaryNode<E> delete(E elem) {
-        return null;
+        BinaryNode<E> target = this.deleteHelper(elem, this.root);
+        if(target != null) {
+            BinaryNode<E> parent = target.parent();
+
+            //Target is Root
+            if(parent == null) {
+                if(target.hasRight()) {
+                    //Find home for target.left
+                    BinaryNode<E> rightChild = target.right();
+                    if(rightChild.hasLeft()) {
+                        BinaryNode<E> leftTree = rightChild.left();
+                        while(leftTree.hasLeft()) {
+                            leftTree.setHeight(leftTree.height() + target.left().height());
+                            leftTree = leftTree.left();
+                        }
+
+                        leftTree.setLeft(target.left());
+                    }
+
+                    this.root = target.right();
+                    this.height = this.root.height();
+                } else if(target.hasLeft()) {
+                    this.root = target.left();
+                    this.height = this.root.height();
+                } else {
+                    this.root = null;
+                    this.height = 0;
+                    this.size = 0;
+                }
+            } else {
+                int flag = parent.compareTo(target);
+
+                //Target is RightChild
+                if(flag > 0) {
+                    if(target.hasLeft()) {
+                        //Reassign Parent's right child to target.left tree
+                        this.size--;
+                        parent.setHeight(parent.height() - 1);
+                        parent.setRight(target.left());
+                        target.left().setParent(parent);
+
+                        //Find Rightmost Home for Target.right
+                        if(target.hasRight()) {
+                            BinaryNode<E> leftTargetTree = target.left();
+
+                            while(leftTargetTree.hasRight()) {
+                                leftTargetTree.setHeight(leftTargetTree.height() + target.right().height());
+                                leftTargetTree = leftTargetTree.right();
+                            }
+                            //Place target.right in Home
+                            leftTargetTree.setRight(target.right());
+                            target.right().setParent(leftTargetTree);
+                        }
+                    } else {
+                        //Target Left Empty
+                        //Replace Parent.right with Target.right
+                        this.size--;
+                        parent.setRight(target.right());
+                        if(target.right() != null) {
+                            target.right().setParent(parent);
+                        }
+                    }
+                }
+                //Target is Left Child
+                if(flag < 0) {
+                    if(target.hasRight()) {
+                        //Reassign parent's Left-child to target.right tree
+                        this.size--;
+                        parent.setHeight(parent.height() - 1);
+                        parent.setLeft(target.right());
+                        target.right().setParent(parent);
+                        if(target.hasLeft()) {
+                            BinaryNode<E> rightTargetTree = target.right();
+
+                            //Find leftMost Home for Target.left
+                            while(rightTargetTree.hasLeft()) {
+                                rightTargetTree.setHeight(rightTargetTree.height() + target.left().height());
+                                rightTargetTree = rightTargetTree.left();
+                            }
+                            //Place Target.left in home
+                            rightTargetTree.setLeft(target.left());
+                            target.left().setParent(rightTargetTree);
+                        }
+                    } else {
+                        //Target.right empty
+                        //Replace parent left child with target.leftChild
+                        this.size--;
+                        parent.setLeft(target.left());
+                        target.left().setParent(parent);
+                    }
+                }
+            }
+        }
+
+        if(this.root != null) {
+            this.updateHeight();
+        }
+        return target;
     }
 
+    public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
+        BinaryNode<E> target = curr;
+        if(curr == null) {
+            return null;
+        }
+        if(curr.data() == elem) {
+            target = curr;
+        } else {
+            //Check Children
+            int flag = curr.data().compareTo(elem);
+            if(flag > 0) {
+                //right child
+                if(curr.hasRight()) {
+                    return this.deleteHelper(elem, curr.right());
+                }
+            }
+            if(flag < 0) {
+                //left child
+                if(curr.hasLeft()) {
+                    return this.deleteHelper(elem, curr.left());
+                }
+            }
+        }
+
+        return target;
+    }
     // Stuff to help you debug if you want
     // Can ignore or use to see if it works.
     static <E extends Comparable<E>> Tree<E> mkAVL (Collection<E> elems) {
