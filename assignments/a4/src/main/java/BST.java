@@ -203,6 +203,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                 if(flag > 0) {
                     if(target.hasLeft()) {
                         //Reassign Parent's right child to target.left tree
+                        this.size--;
+                        parent.setHeight(parent.height() - 1);
                         parent.setRight(target.left());
                         target.left().setParent(parent);
 
@@ -221,14 +223,19 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                     } else {
                         //Target Left Empty
                         //Replace Parent.right with Target.right
+                        this.size--;
                         parent.setRight(target.right());
-                        target.right().setParent(parent);
+                        if(target.right() != null) {
+                            target.right().setParent(parent);
+                        }
                     }
                 }
                 //Target is Left Child
                 if(flag < 0) {
                     if(target.hasRight()) {
                         //Reassign parent's Left-child to target.right tree
+                        this.size--;
+                        parent.setHeight(parent.height() - 1);
                         parent.setLeft(target.right());
                         target.right().setParent(parent);
                         if(target.hasLeft()) {
@@ -246,6 +253,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                     } else {
                         //Target.right empty
                         //Replace parent left child with target.leftChild
+                        this.size--;
                         parent.setLeft(target.left());
                         target.left().setParent(parent);
                     }
@@ -253,10 +261,13 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             }
         }
 
+        if(this.root != null) {
+            this.updateHeight();
+        }
         return target;
     }
     public BinaryNode<E> deleteHelper(E elem, BinaryNode<E> curr) {
-        BinaryNode<E> target = null;
+        BinaryNode<E> target = curr;
         if(curr == null) {
             return null;
         }
@@ -268,16 +279,17 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
             if(flag > 0) {
                 //right child
                 if(curr.hasRight()) {
-                    this.deleteHelper(elem, curr.right());
+                    return this.deleteHelper(elem, curr.right());
                 }
             }
             if(flag < 0) {
                 //left child
                 if(curr.hasLeft()) {
-                    this.deleteHelper(elem, curr.left());
+                    return this.deleteHelper(elem, curr.left());
                 }
             }
         }
+
         return target;
     }
 

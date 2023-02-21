@@ -151,6 +151,20 @@ public class BSTTest {
         strTree.insert(rootStr.data());
         loadStr();
         assertEquals(4, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals(true, strTree.isBalanced());
 
+        //Delete Leaf
+        assertEquals("Answer", strTree.delete("Answer").data());
+        assertEquals(3, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals(false, strTree.isBalanced());
+
+        //Delete Mid
+        assertEquals("THICC", strTree.delete("THICC").data());
+        assertEquals("apple", strTree.root().left().data());
+        assertEquals(2, strTree.size());
+        assertEquals(2, strTree.height());
+        assertEquals(true, strTree.isBalanced());
     }
 }
