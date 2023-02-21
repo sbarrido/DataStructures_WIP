@@ -52,6 +52,7 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     // TODO: Preorder traversal
     public List<E> preOrderList() {
         ArrayList<E> curr = new ArrayList<>();
+        //Node - left - right
 
         return curr;
     }
