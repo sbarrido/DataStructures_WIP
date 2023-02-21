@@ -192,32 +192,45 @@ public class BSTTest {
 //        assertEquals(2, strTree.height());
 //        assertEquals(true, strTree.isBalanced());
 //    }
-//    @Test
-//    void orderingTest() {
-//        // Start
-//        // THICC ANSWER
-//        //apple
-//        loadStr();
-//        ArrayList<String> pre = (ArrayList<String>) strTree.preOrderList();
-//        ArrayList<String> in = (ArrayList<String>) strTree.inOrderList();
-//        ArrayList<String> post = (ArrayList<String>) strTree.postOrderList();
-//
-//        //Pre
-//        assertEquals("Start", pre.get(0));
-//        assertEquals("THICC", pre.get(1));
-//        assertEquals("apple", pre.get(2));
-//        assertEquals("Answer", pre.get(3));
-//
-//        //in order
-//        assertEquals("apple", in.get(0));
-//        assertEquals("THICC", in.get(1));
-//        assertEquals("Start", in.get(2));
-//        assertEquals("Answer", in.get(3));
-//
-//        //Post
-//        assertEquals("apple", post.get(0));
-//        assertEquals("THICC", post.get(1));
-//        assertEquals("Answer", post.get(2));
-//        assertEquals("Start", post.get(3));
-//    }
+    @Test
+    void orderingTest() {
+        /*
+                Start
+           Answer      THICC
+        Ab   Answers THE    apple
+
+         */
+        loadStr();
+        ArrayList<String> pre = (ArrayList<String>) strTree.preOrderList();
+        ArrayList<String> in = (ArrayList<String>) strTree.inOrderList();
+        ArrayList<String> post = (ArrayList<String>) strTree.postOrderList();
+
+        //Pre - Node / left / right
+        assertEquals("Start", pre.get(0));
+        assertEquals("Answer", pre.get(1));
+        assertEquals("Ab", pre.get(2));
+        assertEquals("Answers", pre.get(3));
+        assertEquals("THICC", pre.get(4));
+        assertEquals("THE", pre.get(5));
+        assertEquals("apple", pre.get(6));
+
+
+        //in order - left / node / right
+        assertEquals("Ab", in.get(0));
+        assertEquals("Answer", in.get(1));
+        assertEquals("Answers", in.get(2));
+        assertEquals("Start", in.get(3));
+        assertEquals("THE", in.get(4));
+        assertEquals("THICC", in.get(5));
+        assertEquals("apple", in.get(6));
+
+        //Post - left / right / node
+        assertEquals("Ab", post.get(0));
+        assertEquals("Answers", post.get(1));
+        assertEquals("Answer", post.get(2));
+        assertEquals("THE", post.get(3));
+        assertEquals("apple", post.get(4));
+        assertEquals("THICC", post.get(5));
+        assertEquals("Start", post.get(6));
+    }
 }
