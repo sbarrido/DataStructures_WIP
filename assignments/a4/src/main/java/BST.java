@@ -17,8 +17,8 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
     // BST
     public BST(BinaryNode<E> root){
         this.root = root;
-        this.height = 1;
-        this.size = 1;
+        this.height = root.height();
+        this.size = root.size();
     }
 
     // Access field
