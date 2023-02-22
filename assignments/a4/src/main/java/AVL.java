@@ -153,6 +153,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         if(leftChild.hasRight()) { rSize = leftChild.right().size(); }
         leftChild.setSize(lSize + rSize + 1);
 
+        this.heightHelper(leftChild);
         if(this.root == node) {
             leftChild.setParent(null);
             this.root = leftChild;
@@ -199,6 +200,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         if(rightChild.hasRight()) { rSize = rightChild.right().size(); }
         rightChild.setSize(lSize + rSize + 1);
 
+        this.heightHelper(rightChild);
         if(this.root == node) {
             rightChild.setParent(null);
             this.root = rightChild;
