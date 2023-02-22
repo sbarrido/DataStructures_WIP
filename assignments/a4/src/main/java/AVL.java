@@ -52,14 +52,28 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     public void updateHeight() {
         this.heightHelper(this.root);
     }
-    private void heightHelper(BinaryNode<E> node) {
+    private int heightHelper(BinaryNode<E> node) {
         int lHeight = 0;
         int rHeight = 0;
-        if(node == null) return;
+        if(node == null) return 0;
         if(node.hasLeft()) { lHeight = node.left().height(); }
         if(node.hasRight()) { rHeight = node.right().height(); }
 
         node.setHeight(Math.max(lHeight, rHeight) + 1);
+
+        return Math.max(lHeight, rHeight) + 1;
+    }
+    private int sizeHelper(BinaryNode<E> node) {
+        int lSize = 1;
+        int rSize = 1;
+        if(node == null) return 0;
+        if(node.hasLeft()) { lSize = node.left().size(); }
+        if(node.hasRight()) { rSize = node.right().size(); }
+
+        node.setSize(Math.max(lSize, rSize) + 1);
+
+        return Math.max(lSize, rSize) + 1;
+
     }
     // Traversals that return lists
     // Preorder traversal
@@ -131,35 +145,23 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         BinaryNode<E> leftChild = node.left();
         BinaryNode<E> adoptedRightTree = leftChild.right();
 
-        if(adoptedRightTree!= null) {
-            node.setLeft(adoptedRightTree);
-            adoptedRightTree.setParent(node);
-        } else {
-            node.setLeft(null);
-            node.setParent(leftChild);
-        }
-
-        this.heightHelper(node);
-        int lSize = 0;
-        int rSize = 0;
-        if(node.hasLeft()) { lSize = node.left().size(); }
-        if(node.hasRight()) { rSize = node.right().size(); }
-        node.setSize(lSize + rSize + 1);
-
-        leftChild.setHeight(leftChild.height() + 1);
-        leftChild.setRight(node);
-
-        if(leftChild.hasLeft()) { lSize = leftChild.left().size(); }
-        if(leftChild.hasRight()) { rSize = leftChild.right().size(); }
-        leftChild.setSize(lSize + rSize + 1);
-
-        this.heightHelper(leftChild);
-        if(this.root == node) {
+        node.setLeft(adoptedRightTree);
+        node.setRight(node);
+        if(node == this.root) {
             leftChild.setParent(null);
             this.root = leftChild;
+        } else {
+            leftChild.setParent(node.parent());
         }
 
-        this.updateHeight();
+        int nodeHeight = this.heightHelper(node);
+        int leftChildHeight = this.heightHelper(leftChild);
+        int nodeSize = this.sizeHelper(node);
+        int leftChildSize = this.sizeHelper(leftChild);
+        node.setHeight(nodeHeight);
+        node.setSize(nodeSize);
+        leftChild.setHeight(leftChildHeight);
+        leftChild.setSize(leftChildSize);
         this.RRotations++;
     }
 
@@ -178,34 +180,24 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         BinaryNode<E> rightChild = node.right();
         BinaryNode<E> adoptedLeftTree = rightChild.left();
 
-        if(adoptedLeftTree != null) {
-            node.setRight(adoptedLeftTree);
-            adoptedLeftTree.setParent(node);
-        } else {
-            node.setRight(null);
-            node.setParent(rightChild);
-        }
-
-        this.heightHelper(node);
-        int lSize = 0;
-        int rSize = 0;
-        if(node.hasLeft()) { lSize = node.left().size(); }
-        if(node.hasRight()) { rSize = node.right().size(); }
-        node.setSize(lSize + rSize + 1);
-
-        rightChild.setHeight(rightChild.height() + 1);
+        node.setRight(adoptedLeftTree);
         rightChild.setLeft(node);
-
-        if(rightChild.hasLeft()) { lSize = rightChild.left().size(); }
-        if(rightChild.hasRight()) { rSize = rightChild.right().size(); }
-        rightChild.setSize(lSize + rSize + 1);
-
-        this.heightHelper(rightChild);
-        if(this.root == node) {
+        if(node == this.root) {
             rightChild.setParent(null);
             this.root = rightChild;
+        } else {
+            rightChild.setParent(node.parent());
         }
-        this.updateHeight();
+
+        int nodeHeight = this.heightHelper(node);
+        int rightChildHeight = this.heightHelper(rightChild);
+        int nodeSize = this.sizeHelper(node);
+        int rightChildSize = this.sizeHelper(rightChild);
+        node.setHeight(nodeHeight);
+        node.setSize(nodeSize);
+        rightChild.setHeight(rightChildHeight);
+        rightChild.setSize(rightChildSize);
+
         this.LRotations++;
     }
 
@@ -216,22 +208,14 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     */
     public void possibleRotateRight(BinaryNode<E> node){
         boolean isBalanced = node.isBalanced();
-        int lHeight, rHeight;
-        if(!node.hasRight()) {
-            rHeight = 0;
-        } else {
-            rHeight = node.right().height();
-        }
-        if(!node.hasLeft()) {
-            lHeight = 0;
-        } else {
-            lHeight = node.left().height();
-        }
-        boolean bigLeft = lHeight > rHeight;
+        int lHeight = 0;
+        int rHeight = 0;
+        if(node.hasLeft()) { lHeight = node.left().height(); }
+        if(node.hasRight()) { rHeight = node.right().height(); }
 
-        if(!isBalanced && bigLeft) {
-            rotateRight(node);
-        }
+        boolean leftBig = lHeight > rHeight;
+
+        if(!isBalanced && leftBig) { rotateRight(node); }
     }
 
     /*
@@ -241,22 +225,13 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     */
     public void possibleRotateLeft(BinaryNode<E> node){
         boolean isBalanced = node.isBalanced();
-        int lHeight, rHeight;
-        if(!node.hasRight()) {
-            rHeight = 0;
-        } else {
-            rHeight = node.right().height();
-        }
-        if(!node.hasLeft()) {
-            lHeight = 0;
-        } else {
-            lHeight = node.left().height();
-        }
-        boolean bigRight = rHeight > lHeight;
+        int lHeight = 0;
+        int rHeight = 0;
+        if(node.hasLeft()) { lHeight = node.left().height(); }
+        if(node.hasRight()) { rHeight = node.right().height(); }
 
-        if(!isBalanced && bigRight) {
-            rotateLeft(node);
-        }
+        boolean rightBig = rHeight > lHeight;
+        if(!isBalanced && rightBig) { rotateLeft(node); }
     }
 
     /*
