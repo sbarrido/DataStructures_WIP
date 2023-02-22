@@ -34,10 +34,10 @@ public class SearchEngine {
     // TODO: tweak logic so that it builds the proper tree
     public void buildList() throws IOException {
         System.out.println("reading");
-        InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
-        InputStreamReader inRead = new InputStreamReader(in);
-        BufferedReader reader = new BufferedReader(inRead);
-//        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
+//        InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
+//        InputStreamReader inRead = new InputStreamReader(in);
+//        BufferedReader reader = new BufferedReader(inRead);
+        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
         String url;
         while((url = reader.readLine()) != null){
             Document doc = Jsoup.connect(url).get();
