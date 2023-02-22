@@ -17,9 +17,11 @@ public class SearchEngine {
         switch(this.mode) {
             case 3:
                 nodeTree = new BST<>();
+                buildList();
                 break;
             case 4:
                 nodeTree = new AVL<>();
+                buildList();
                 break;
         }
     }
@@ -38,19 +40,19 @@ public class SearchEngine {
             Document doc = Jsoup.connect(url).get();
             String text = doc.body().text().toLowerCase();
             String[] words = text.split("\\s+"); // splits by whitespace
-            BST<Node> bst = null;
-            AVL<Node> avl = null;
-            if(this.mode == 3) {
-                bst = (BST) this.nodeTree;
-            } else {
-                avl = (AVL) this.nodeTree;
-            }
+
             for (String word : words) {
-                if(bst != null) {
-                    bst.insert(new Node(word));
-                }
-                if(avl != null) {
-                    avl.insert(new Node(word));
+                Node node = new Node(word);
+                BinaryNode<Node> target = nodeTree.search(node);
+
+                if(target == null) {
+                    nodeTree.insert(node);
+                } else {
+                    Node data = target.data();
+                    ArrayList<String> urls = data.getReferences();
+                    if(!urls.contains(url)) {
+                        urls.add(url);
+                    }
                 }
             }
         }
@@ -63,7 +65,15 @@ public class SearchEngine {
     public ArrayList<String> search(String term) {
         System.out.println("Searching for " + term + " using data structure mode " + mode + "...");
         // Search logic goes here
-        return new ArrayList<>();
+        Node target = new Node(term);
+        BinaryNode<Node> found = nodeTree.search(target);
+        ArrayList<String> targetReferences = null;
+        if(found != null) {
+            Node node = found.data();
+            targetReferences = node.getReferences();
+        }
+
+        return targetReferences;
     }
 
     public static void main(String[] args) throws IOException{
