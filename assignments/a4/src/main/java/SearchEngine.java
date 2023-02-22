@@ -34,7 +34,10 @@ public class SearchEngine {
     // TODO: tweak logic so that it builds the proper tree
     public void buildList() throws IOException {
         System.out.println("reading");
-        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
+        InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
+        InputStreamReader inRead = new InputStreamReader(in);
+        BufferedReader reader = new BufferedReader(inRead);
+//        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
         String url;
         while((url = reader.readLine()) != null){
             Document doc = Jsoup.connect(url).get();
@@ -80,8 +83,8 @@ public class SearchEngine {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Enter mode as in what data structure to use:");
-        System.out.println("    1. Array List ");
-        System.out.println("    2. Sorted Array List");
+        System.out.println("    3. Array List ");
+        System.out.println("    4. Sorted Array List");
 
         int mode = input.nextInt();
 
@@ -93,7 +96,15 @@ public class SearchEngine {
             input.nextLine(); // consume the remaining newline character
             System.out.print("Search (enter a term to query): ");
             String term = input.nextLine();
-            engine.search(term);
+            ArrayList<String> targetUrls = engine.search(term);
+            int count = 1;
+            if(targetUrls == null) {
+                System.out.println("Not found");
+            } else {
+                for(String url : targetUrls) {
+                    System.out.println(count++ + ". " + url);
+                }
+            }
             System.out.print("Would you like to search another term (y/n)? ");
             answer = input.nextLine();
         }
