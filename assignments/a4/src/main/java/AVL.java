@@ -132,11 +132,14 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         BinaryNode<E> adoptedRightTree = leftChild.right();
 
         if(adoptedRightTree!= null) {
+            node.setLeft(adoptedRightTree);
             adoptedRightTree.setParent(node);
+        } else {
+            node.setLeft(null);
         }
-        node.setLeft(adoptedRightTree);
-        node.setParent(leftChild);
+
         leftChild.setRight(node);
+
         if(this.root == node) {
             node.setHeight(node.height() - 1);
             this.root = leftChild;
@@ -164,12 +167,27 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         if(adoptedLeftTree != null) {
             node.setRight(adoptedLeftTree);
             adoptedLeftTree.setParent(node);
+        } else {
+            node.setRight(null);
+            node.setParent(rightChild);
         }
 
+        this.heightHelper(node);
+        int lSize = 0;
+        int rSize = 0;
+        if(node.hasLeft()) { lSize = node.left().size(); }
+        if(node.hasRight()) { rSize = node.right().size(); }
+        node.setSize(lSize + rSize + 1);
+
+        rightChild.setHeight(rightChild.height() + 1);
         rightChild.setLeft(node);
 
+        if(rightChild.hasLeft()) { lSize = rightChild.left().size(); }
+        if(rightChild.hasRight()) { rSize = rightChild.right().size(); }
+        rightChild.setSize(lSize + rSize + 1);
+
         if(this.root == node) {
-            node.setHeight(node.height() - 1);
+            rightChild.setParent(null);
             this.root = rightChild;
             this.updateHeight();
         }
