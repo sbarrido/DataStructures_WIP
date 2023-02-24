@@ -1,11 +1,11 @@
-import java.util.HashTable;
+import java.util.Hashtable;
 
 public class TrieNodeWHashTable {
     boolean isWord;
-    HashTable<Character, TrieNodeWHashTable> children;
+    Hashtable<Character, TrieNodeWHashTable> children;
 
     public TrieNodeWHashTable() {
         this.isWord = false;
-        children = new HashTable<>();
+        children = new Hashtable<Character, TrieNodeWHashTable>();
     }
 }
