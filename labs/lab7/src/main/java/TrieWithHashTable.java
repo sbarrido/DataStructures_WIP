@@ -49,7 +49,10 @@ public class TrieWithHashTable {
             //Check word length
             if(word.length() == 1) {
                 //Check node - bool
-                if(node.isWord) found = true;
+                TrieNodeWHashTable targetNode = node.children.get(target);
+                if(targetNode.isWord) {
+                    return true;
+                }
             }
             //Word contains more -> recurse
             return this.searchHelper(node.children.get(target), word.substring(1), found);

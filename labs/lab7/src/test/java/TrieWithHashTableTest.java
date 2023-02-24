@@ -50,10 +50,10 @@ public class TrieWithHashTableTest {
         assertEquals(false, trie.root.children.containsKey('B'));
         assertEquals(true, trie.root.children.containsKey('b'));
         trie.delete("b");
-        assertEquals(false, trie.root.children.get('b').isWord);
+        assertEquals(false, trie.root.isWord);
 
         trie.delete("a");
-        assertEquals(false, trie.root.children.get('a').isWord);
+        assertEquals(false, trie.root.isWord);
         assertEquals(true, trie.search("ant"));
     }
 }
