@@ -92,6 +92,11 @@ public class BSTTest {
 
     public void loadStr() {
         //Insert to root.right
+        /*
+                    Start
+            Answer----|----THICC
+        Ab---|Answers  THE---|---apple
+         */
         strTree.insert("THICC");
         assertEquals(true, "THICC".compareTo(rootStr.data()) > 0);
         assertEquals("THICC", strTree.root().right().data());
@@ -147,6 +152,12 @@ public class BSTTest {
         //Search Root
         assertEquals(rootStr, strTree.search("Start"));
 
+
+        /*
+                    Start
+            Answer----|----THICC
+        Ab---|Answers  THE---|---apple
+         */
         loadStr();
         assertEquals(7, strTree.size());
         //Search Mid
@@ -173,6 +184,13 @@ public class BSTTest {
         assertEquals(0, strTree.size());
         assertEquals(0, strTree.height());
 
+
+
+        /*
+                    Start
+            Answer----|----THICC
+        Ab---|Answers  THE---|---apple
+         */
         strTree.insert(rootStr.data());
         loadStr();
         assertEquals(7, strTree.size());
@@ -182,6 +200,7 @@ public class BSTTest {
         //Delete Mid - left
         assertEquals("Answer", strTree.delete("Answer").data());
         assertEquals("Ab", strTree.root().left().data());
+        assertEquals("Answers", strTree.root().left().right().data());
         assertEquals(6, strTree.size());
         assertEquals(3, strTree.height());
         assertEquals(true, strTree.isBalanced());
@@ -207,7 +226,7 @@ public class BSTTest {
         assertEquals(3, strTree.height());
         assertEquals(false, strTree.isBalanced());
 
-        //Delete Leaf - mid only 1 child - reblance
+        //Delete Leaf - mid only 1 child - becomes balanced
         assertEquals("THICC", strTree.delete("THICC").data());
         assertEquals("THE", strTree.root().right().data());
         assertEquals(2, strTree.size());

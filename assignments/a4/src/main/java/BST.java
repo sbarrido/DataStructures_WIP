@@ -140,13 +140,11 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
         return searchHelper(elem, this.root);
     }
     public BinaryNode<E> searchHelper(E elem, BinaryNode<E> curr) {
-        if(curr == null) {
-            return curr;
+        if(curr != null) {
+            int flag = elem.compareTo(curr.data());
+            if(flag < 0) return searchHelper(elem, curr.left());
+            if(flag > 0) return searchHelper(elem, curr.right());
         }
-
-        int flag = elem.compareTo(curr.data());
-        if(flag < 0) return searchHelper(elem, curr.left());
-        if(flag > 0) return searchHelper(elem, curr.right());
 
         return curr;
     }

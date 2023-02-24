@@ -34,10 +34,10 @@ public class SearchEngine {
     // TODO: tweak logic so that it builds the proper tree
     public void buildList() throws IOException {
         System.out.println("reading");
-//        InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
-//        InputStreamReader inRead = new InputStreamReader(in);
-//        BufferedReader reader = new BufferedReader(inRead);
-        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
+        InputStream in = getClass().getClassLoader().getResourceAsStream("dataset.txt");
+        InputStreamReader inRead = new InputStreamReader(in);
+        BufferedReader reader = new BufferedReader(inRead);
+//        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
         String url;
         while((url = reader.readLine()) != null){
             Document doc = Jsoup.connect(url).get();
@@ -83,8 +83,8 @@ public class SearchEngine {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Enter mode as in what data structure to use:");
-        System.out.println("    3. Array List ");
-        System.out.println("    4. Sorted Array List");
+        System.out.println("    3. BST ");
+        System.out.println("    4. AVL");
 
         int mode = input.nextInt();
 
