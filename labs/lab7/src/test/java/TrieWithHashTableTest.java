@@ -32,6 +32,7 @@ public class TrieWithHashTableTest {
     @Test
     void insertTest() {
         loadStr();
+        trie.insert("ant");
     }
     @Test
     void searchTest() {

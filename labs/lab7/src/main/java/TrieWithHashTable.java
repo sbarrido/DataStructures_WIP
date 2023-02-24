@@ -20,11 +20,12 @@ public class TrieWithHashTable {
         }
         char target = word.charAt(0);
         if(!node.children.containsKey(target)) {
+            TrieNodeWHashTable newNode = new TrieNodeWHashTable();
             //put target with new node
             if(word.length() == 1) {
-                node.isWord = true;
+                newNode.isWord = true;
             }
-            node.children.put(target, new TrieNodeWHashTable());
+            node.children.put(target, newNode);
 
         }
         insertHelper(node.children.get(target), word.substring(1));
