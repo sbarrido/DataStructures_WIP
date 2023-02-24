@@ -2,11 +2,8 @@ import java.util.Stack;
 
 public class TrieWithHashTable {
     TrieNodeWHashTable root;
-    Stack<TrieNodeWHashTable> rmvStack;
     public TrieWithHashTable() {
         root = new TrieNodeWHashTable();
-        rmvStack = new Stack<TrieNodeWHashTable>();
-        rmvStack.push(root);
     }
 
     /**
@@ -18,15 +15,20 @@ public class TrieWithHashTable {
     }
 
     void insertHelper(TrieNodeWHashTable node, String word) {
+        if(word.length() == 0) {
+            return;
+        }
         char target = word.charAt(0);
         if(!node.children.containsKey(target)) {
             //put target with new node
-            if(word.length() == 1) { this.root.isWord = true; }
+            if(word.length() == 1) {
+                node.isWord = true;
+            }
             node.children.put(target, new TrieNodeWHashTable());
-        } else {
-            //Recursive
-            insertHelper(node.children.get(target), word.substring(1));
+
         }
+        insertHelper(node.children.get(target), word.substring(1));
+
     }
 
     /**
@@ -34,22 +36,23 @@ public class TrieWithHashTable {
      * @param word The word to be searched for
      */
     boolean search(String word) {
-        return searchHelper(this.root, word);
+        return searchHelper(this.root, word, false);
     }
 
-    boolean searchHelper(TrieNodeWHashTable node, String word) {
-        boolean found = false;
-
+    boolean searchHelper(TrieNodeWHashTable node, String word, boolean found) {
+        if(word.length() == 0) {
+            return found;
+        }
         char target = word.charAt(0);
         if(node.children.containsKey(target)) {
             //Check word length
             if(word.length() == 1) {
                 //Check node - bool
                 if(node.isWord) found = true;
-            } else {
-                //Word contains more -> recurse
-                this.searchHelper(node.children.get(target), word.substring(1));
             }
+            //Word contains more -> recurse
+            return this.searchHelper(node.children.get(target), word.substring(1), found);
+
         }
         return found;
     }
@@ -59,7 +62,7 @@ public class TrieWithHashTable {
      * @param word The word to be deleted
      */
     void delete(String word) {
-        //TODO
+        deleteHelper(this.root, word, 0);
     }
 
     void deleteHelper(TrieNodeWHashTable node, String word, int index) {
@@ -67,51 +70,15 @@ public class TrieWithHashTable {
             return;
         }
 
-        //BEGIN STACKING NODES TO BE DELETED
-        boolean found = false;
         char target = word.charAt(index);
         if(node.children.containsKey(target)) {
-            //Add to Stack to check delete
-            rmvStack.push(node);
-
             //Check word length - 1 == index
             if(word.length() - 1 == index) {
                 //check node boolean
-                if(node.isWord) {
-                    //begin delete
-                    found = true;
-                }
+               node.isWord = false;
             } else {
                 //recurse not end of word
                 deleteHelper(node.children.get(target), word, index + 1);
-            }
-        }
-
-        //IF FOUND FINAL NODE THAT IS WORD
-        //POP OFF MF
-        boolean initFound = false;
-        if(found) {
-            while(!rmvStack.isEmpty()) {
-                TrieNodeWHashTable popped = rmvStack.pop();
-
-                if(popped.isWord && !initFound) {
-                    initFound = true;
-                    rmvStack.pop().children.remove(word.charAt(index--));
-                } else if(initFound){
-                    break;
-                } else {
-                    if(!rmvStack.isEmpty()) {
-                        if(popped.children.isEmpty()) {
-                            TrieNodeWHashTable parent = rmvStack.pop();
-                            parent.children.remove(word.charAt(index--));
-                            if(parent.isWord) {
-                                break;
-                            }
-                        } else {
-                            popped.isWord = false;
-                        }
-                    }
-                }
             }
         }
     }
