@@ -77,9 +77,10 @@ public class TrieWithHashTable {
         char target = word.charAt(index);
         if(node.children.containsKey(target)) {
             //Check word length - 1 == index
+            TrieNodeWHashTable targetNode = node.children.get(target);
             if(word.length() - 1 == index) {
                 //check node boolean
-               node.isWord = false;
+               targetNode.isWord = false;
             } else {
                 //recurse not end of word
                 deleteHelper(node.children.get(target), word, index + 1);
