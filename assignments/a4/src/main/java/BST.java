@@ -175,6 +175,9 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                Reflection of above
                * <- denotes extract outside
          */
+        if(curr == null) {
+            return;
+        }
         int flag = elem.compareTo(curr.data());
         if(flag < 0) {
             if(curr.hasLeft()) {
@@ -230,6 +233,10 @@ public class BST<E extends Comparable<E>> implements Tree<E> {
                 - reduce size of curr
                 - reduce height of curr
          */
+        if(curr == null) {
+            return null;
+        }
+
         int flag = elem.compareTo(curr.data());
         if(flag < 0) {
             // recurse: elem is smaller than curr.data
