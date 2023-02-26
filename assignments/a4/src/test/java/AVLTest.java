@@ -39,7 +39,6 @@ public class AVLTest {
         assertEquals(1, intTree.size());
         assertEquals(true, intTree.isBalanced());
 
-        //Insert to root.right
         strTree.insert("THICC");
         assertEquals(true, "THICC".compareTo(rootStr.data()) > 0);
         assertEquals("THICC", strTree.root().right().data());
@@ -48,7 +47,7 @@ public class AVLTest {
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.right.right
-        //Left ROTATE
+        //RotateL
         strTree.insert("apple");
         assertEquals(true, "apple".compareTo(rootStr.data()) > 0);
         assertEquals(true, "apple".compareTo("THICC") > 0);
@@ -56,37 +55,39 @@ public class AVLTest {
         assertEquals(3, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
-        //Insert to root.right.left
+        //Insert to root.left.right
         strTree.insert("THE");
-        assertEquals(true, "THE".compareTo(rootStr.data()) > 0);
-        assertEquals(true, "THE".compareTo("apple") < 0);
+        assertEquals(true, "THE".compareTo(strTree.root().data()) < 0);
+        assertEquals(true, "THE".compareTo("Start") > 0);
         assertEquals(3, strTree.height());
         assertEquals(4, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.left
         strTree.insert("Answer");
-        assertEquals(true, "Answer".compareTo(rootStr.data()) < 0);
+        assertEquals(true, "Answer".compareTo(strTree.root().data()) < 0);
         assertEquals(true, "Answer".compareTo("Start") < 0);
         assertEquals(3, strTree.height());
         assertEquals(5, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.left.left
+        //right rotate
         String value = "Ab";
         strTree.insert(value);
-        assertEquals(true, value.compareTo(rootStr.data()) < 0);
+        assertEquals(true, value.compareTo(strTree.root().data()) < 0);
+        assertEquals(true, value.compareTo("Start") < 0);
         assertEquals(true, value.compareTo("Answer") < 0);
-        assertEquals(4, strTree.height());
+        assertEquals(3, strTree.height());
         assertEquals(6, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
-        //insert to root.left.right
+        //insert to root.left.right.right
         value = "Answers";
         strTree.insert(value);
-        assertEquals(true, value.compareTo(rootStr.data()) < 0);
+        assertEquals(true, value.compareTo(strTree.root().data()) < 0);
         assertEquals(true, value.compareTo("Answer") > 0);
-        assertEquals(4, strTree.height());
+        assertEquals(3, strTree.height());
         assertEquals(7, strTree.size());
         assertEquals(true, strTree.isBalanced());
     }
@@ -108,39 +109,39 @@ public class AVLTest {
         assertEquals(3, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
-        //Insert to root.right.left
+        //Insert to root.left.right
         strTree.insert("THE");
-        assertEquals(true, "THE".compareTo(rootStr.data()) > 0);
-        assertEquals(true, "THE".compareTo("apple") < 0);
+        assertEquals(true, "THE".compareTo(strTree.root().data()) < 0);
+        assertEquals(true, "THE".compareTo("Start") > 0);
         assertEquals(3, strTree.height());
         assertEquals(4, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.left
         strTree.insert("Answer");
-        assertEquals(true, "Answer".compareTo(rootStr.data()) < 0);
+        assertEquals(true, "Answer".compareTo(strTree.root().data()) < 0);
         assertEquals(true, "Answer".compareTo("Start") < 0);
         assertEquals(3, strTree.height());
         assertEquals(5, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.left.left
-        //
+        //right rotate
         String value = "Ab";
         strTree.insert(value);
-        assertEquals(true, value.compareTo(rootStr.data()) < 0);
+        assertEquals(true, value.compareTo(strTree.root().data()) < 0);
         assertEquals(true, value.compareTo("Start") < 0);
         assertEquals(true, value.compareTo("Answer") < 0);
-        assertEquals(4, strTree.height());
+        assertEquals(3, strTree.height());
         assertEquals(6, strTree.size());
         assertEquals(true, strTree.isBalanced());
 
         //insert to root.left.right.right
         value = "Answers";
         strTree.insert(value);
-        assertEquals(true, value.compareTo(rootStr.data()) < 0);
+        assertEquals(true, value.compareTo(strTree.root().data()) < 0);
         assertEquals(true, value.compareTo("Answer") > 0);
-        assertEquals(4, strTree.height());
+        assertEquals(3, strTree.height());
         assertEquals(7, strTree.size());
         assertEquals(true, strTree.isBalanced());
     }
@@ -161,6 +162,32 @@ public class AVLTest {
         assertEquals(null, strTree.search("My Mental"));
     }
     @Test
+    void deleteTest() {
+        /*              Start
+                Answer          THICC
+            Ab     Answers  THE         apple
+         */
+        loadStr();
+        assertEquals(7, strTree.size());
+        assertEquals(3, strTree.height());
+
+        //Delete Leaf
+        strTree.delete("apple");
+        assertEquals(6, strTree.size());
+        assertEquals(3, strTree.height());
+
+        //Delete Leaf
+        //Rotate right
+        /*              Answer
+                   Ab           Start
+                            Answers   Thicc
+         */
+        strTree.delete("THE");
+        assertEquals(5, strTree.size());
+        assertEquals(3, strTree.height());
+        assertEquals("Answer", strTree.root().data());
+    }
+    @Test
     void orderingTest() {
         //  THICC
         // Start Answer
@@ -171,11 +198,11 @@ public class AVLTest {
         ArrayList<String> post = (ArrayList<String>) strTree.postOrderList();
 
         //Pre
-        assertEquals("THICC", pre.get(0));
-        assertEquals("Start", pre.get(1));
-        assertEquals("Answer", pre.get(2));
-        assertEquals("Ab", pre.get(3));
-        assertEquals("Answers", pre.get(4));
+        assertEquals("Start", pre.get(0));
+        assertEquals("Answer", pre.get(1));
+        assertEquals("Ab", pre.get(2));
+        assertEquals("Answers", pre.get(3));
+        assertEquals("THICC", pre.get(4));
         assertEquals("THE", pre.get(5));
         assertEquals("apple", pre.get(6));
 

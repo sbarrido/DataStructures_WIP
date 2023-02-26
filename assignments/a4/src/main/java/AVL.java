@@ -50,7 +50,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
 
     //  updateHeight - same as BST
     public void updateHeight() {
-        this.heightHelper(this.root);
+        this.height = this.heightHelper(this.root);
     }
     private int heightHelper(BinaryNode<E> node) {
         int lHeight = 0;
@@ -59,20 +59,22 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         if(node.hasLeft()) { lHeight = node.left().height(); }
         if(node.hasRight()) { rHeight = node.right().height(); }
 
-        node.setHeight(Math.max(lHeight, rHeight) + 1);
+        int newHeight;
+        newHeight = Math.max(lHeight, rHeight) + 1;
+        node.setHeight(newHeight);
 
-        return Math.max(lHeight, rHeight) + 1;
+        return newHeight;
     }
     private int sizeHelper(BinaryNode<E> node) {
-        int lSize = 1;
-        int rSize = 1;
+        int lSize = 0;
+        int rSize = 0;
         if(node == null) return 0;
         if(node.hasLeft()) { lSize = node.left().size(); }
         if(node.hasRight()) { rSize = node.right().size(); }
 
-        node.setSize(Math.max(lSize, rSize) + 1);
+        node.setSize(lSize + rSize + 1);
 
-        return Math.max(lSize, rSize) + 1;
+        return lSize + rSize + 1;
 
     }
     // Traversals that return lists
@@ -146,7 +148,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         BinaryNode<E> adoptedRightTree = leftChild.right();
 
         node.setLeft(adoptedRightTree);
-        node.setRight(node);
+        leftChild.setRight(node);
         if(node == this.root) {
             leftChild.setParent(null);
             this.root = leftChild;
@@ -154,14 +156,11 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             leftChild.setParent(node.parent());
         }
 
-        int nodeHeight = this.heightHelper(node);
-        int leftChildHeight = this.heightHelper(leftChild);
-        int nodeSize = this.sizeHelper(node);
-        int leftChildSize = this.sizeHelper(leftChild);
-        node.setHeight(nodeHeight);
-        node.setSize(nodeSize);
-        leftChild.setHeight(leftChildHeight);
-        leftChild.setSize(leftChildSize);
+        this.heightHelper(node);
+        this.heightHelper(leftChild);
+        this.sizeHelper(node);
+        this.sizeHelper(leftChild);
+
         this.RRotations++;
     }
 
@@ -189,14 +188,10 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             rightChild.setParent(node.parent());
         }
 
-        int nodeHeight = this.heightHelper(node);
-        int rightChildHeight = this.heightHelper(rightChild);
-        int nodeSize = this.sizeHelper(node);
-        int rightChildSize = this.sizeHelper(rightChild);
-        node.setHeight(nodeHeight);
-        node.setSize(nodeSize);
-        rightChild.setHeight(rightChildHeight);
-        rightChild.setSize(rightChildSize);
+        this.heightHelper(node);
+        this.heightHelper(rightChild);
+        this.sizeHelper(node);
+        this.sizeHelper(rightChild);
 
         this.LRotations++;
     }
@@ -304,9 +299,8 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             this.insertHelper(elem, this.root);
         }
 
-        this.size = this.root.size();
+        this.size = this.sizeHelper(this.root);
         this.updateHeight();
-        this.height = this.root.height();
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
        /* ORGANIZING MY THOUGHTS THAT ARE HANGING BY A THREAD
@@ -323,31 +317,33 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
                Reflection of above
                * <- denotes extract outside
          */
-        int flag = elem.compareTo(curr.data());
-        if(flag < 0) {
-            if(curr.hasLeft()) {
-                //recursive
-                insertHelper(elem, curr.left());
-            } else {
-                //Insert
-                curr.setLeft(new BinaryNode<>(elem, null, null, curr));
+        if(curr != null) {
+            int flag = elem.compareTo(curr.data());
+            if(flag < 0) {
+                if(curr.hasLeft()) {
+                    //recursive
+                    insertHelper(elem, curr.left());
+                } else {
+                    //Insert
+                    curr.setLeft(new BinaryNode<>(elem, null, null, curr));
+                }
+
+            }
+            if(flag > 0) {
+                if(curr.hasRight()) {
+                    //recursive
+                    insertHelper(elem, curr.right());
+                } else {
+                    //Insert
+                    curr.setRight(new BinaryNode<>(elem, null, null, curr));
+                }
             }
 
+            // * extracted
+            this.heightHelper(curr);
+            this.sizeHelper(curr);
+            this.mkBalanced(curr);
         }
-        if(flag > 0) {
-            if(curr.hasRight()) {
-                //recursive
-                insertHelper(elem, curr.right());
-            } else {
-                //Insert
-                curr.setRight(new BinaryNode<>(elem, null, null, curr));
-            }
-        }
-
-        // * extracted
-        this.heightHelper(curr);
-        curr.setSize(curr.size() + 1);
-        this.mkBalanced(curr);
     }
 
     /*
@@ -383,84 +379,87 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
                 - reduce size of curr
                 - reduce height of curr
          */
-        int flag = elem.compareTo(curr.data());
-        if(flag < 0) {
-            // recurse: elem is smaller than curr.data
-            return deleteHelper(elem, curr.left());
-        }
-        if(flag > 0) {
-            //recurse: elem is bigger than curr.data
-            return deleteHelper(elem, curr.right());
-        }
-        if(flag == 0) {
-            //EXECUTE ORDER 66
-            BinaryNode<E> parent = curr.parent();
-            if(parent == null) {
-                //CURR IS ROOT
-                if(curr.hasLeft() || curr.hasRight()) {
-                    if(curr.hasLeft()) { this.root = extractRightMost(curr.left()); }
-                    if(curr.hasRight()) { this.root = extractRightMost(curr.right()); }
+        if(curr != null) {
+            int flag = elem.compareTo(curr.data());
+            if(flag < 0) {
+                // recurse: elem is smaller than curr.data
+                return deleteHelper(elem, curr.left());
+            }
+            if(flag > 0) {
+                //recurse: elem is bigger than curr.data
+                return deleteHelper(elem, curr.right());
+            }
+            if(flag == 0) {
+                //EXECUTE ORDER 66
+                BinaryNode<E> parent = curr.parent();
+                if(parent == null) {
+                    //CURR IS ROOT
+                    if(curr.hasLeft() || curr.hasRight()) {
+                        if(curr.hasLeft()) { this.root = extractRightMost(curr.left()); }
+                        if(curr.hasRight()) { this.root = extractRightMost(curr.right()); }
 
-                    updateHeight();
+                        updateHeight();
+                        this.height = this.root.height();
+                    } else {
+                        this.root = null;
+                        this.height = 0;
+                    }
+
+                } else {
+                    if(!curr.hasRight() && !curr.hasLeft()) {
+                        //CURR NO CHILDREN
+                        int parentFlag = curr.data().compareTo(parent.data());
+                        if(parentFlag > 0) { parent.setRight(null); }
+                        if(parentFlag < 0) { parent.setLeft(null); }
+                    } else {
+                        //CURR HAS CHILDREN
+                        BinaryNode<E> rightMost = null;
+                        if(curr.hasLeft()) {
+                            rightMost = extractRightMost(curr.left());
+                        } else if (curr.hasRight()) {
+                            rightMost = extractRightMost(curr.right());
+                        }
+                        //find which child of parent
+                        int parentFlag = rightMost.data().compareTo(parent.data());
+                        if(parentFlag > 0) { parent.setRight(rightMost); }
+                        if(parentFlag < 0) { parent.setLeft(rightMost); }
+                        rightMost.setParent(parent);
+                        //Assign rightMost.right = curr.right IFF not itself
+                        if(rightMost.compareTo(curr.right()) != 0) {
+                            rightMost.setRight(curr.right());
+                            if(curr.right() != null) {
+                                curr.right().setParent(rightMost);
+                            }
+                        }
+
+                        //IF rightMost.parent != curr
+                        // LeftMost(rightMost) = rightMost.parent
+                        if(rightMost.parent() != curr) {
+                            if(extractLeftMost(rightMost).compareTo(rightMost) != 0) {
+                                extractLeftMost(rightMost).setLeft(rightMost.parent());
+                            }
+                        }
+                    }
+                }
+                this.size--;
+                this.updateHeight();
+                if(this.root != null) {
                     this.height = this.root.height();
-                } else {
-                    this.root = null;
-                    this.height = 0;
-                }
-
-            } else {
-                if(!curr.hasRight() && !curr.hasLeft()) {
-                    //CURR NO CHILDREN
-                    int parentFlag = curr.data().compareTo(parent.data());
-                    if(parentFlag > 0) { parent.setRight(null); }
-                    if(parentFlag < 0) { parent.setLeft(null); }
-                } else {
-                    //CURR HAS CHILDREN
-                    BinaryNode<E> rightMost = null;
-                    if(curr.hasLeft()) {
-                        rightMost = extractRightMost(curr.left());
-                    } else if (curr.hasRight()) {
-                        rightMost = extractRightMost(curr.right());
-                    }
-                    //find which child of parent
-                    int parentFlag = rightMost.data().compareTo(parent.data());
-                    if(parentFlag > 0) { parent.setRight(rightMost); }
-                    if(parentFlag < 0) { parent.setLeft(rightMost); }
-                    rightMost.setParent(parent);
-                    //Assign rightMost.right = curr.right IFF not itself
-                    if(rightMost.compareTo(curr.right()) != 0) {
-                        rightMost.setRight(curr.right());
-                        if(curr.right() != null) {
-                            curr.right().setParent(rightMost);
-                        }
-                    }
-
-                    //IF rightMost.parent != curr
-                    // LeftMost(rightMost) = rightMost.parent
-                    if(rightMost.parent() != curr) {
-                        if(extractLeftMost(rightMost).compareTo(rightMost) != 0) {
-                            extractLeftMost(rightMost).setLeft(rightMost.parent());
-                        }
-                    }
                 }
             }
-            this.size--;
-            this.updateHeight();
-            if(this.root != null) {
-                this.height = this.root.height();
-            }
+
+            //*Extracted
+            int lHeight = 0;
+            int rHeight = 0;
+
+            if(curr.hasLeft()) { lHeight = curr.left().height(); }
+            if(curr.hasRight()) { rHeight = curr.right().height(); }
+
+            curr.setHeight(Math.max(lHeight, rHeight) - 1);
+            curr.setSize(curr.size() - 1);
+            this.mkBalanced(curr);
         }
 
-        //*Extracted
-        int lHeight = 0;
-        int rHeight = 0;
-
-        if(curr.hasLeft()) { lHeight = curr.left().height(); }
-        if(curr.hasRight()) { rHeight = curr.right().height(); }
-
-        curr.setHeight(Math.max(lHeight, rHeight) - 1);
-        curr.setSize(curr.size() - 1);
-        this.mkBalanced(curr);
         return curr;
     }
     // Stuff to help you debug if you want
