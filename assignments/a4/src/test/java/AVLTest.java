@@ -47,8 +47,14 @@ public class AVLTest {
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.right.right
-        //RotateL
+        //RotateLeft
+        /*      Start                           THICC
+                    THICC           =>      Start   apple
+                           apple
+
+         */
         strTree.insert("apple");
+        assertEquals("THICC", strTree.root().data());
         assertEquals(true, "apple".compareTo(rootStr.data()) > 0);
         assertEquals(true, "apple".compareTo("THICC") > 0);
         assertEquals(2, strTree.height());
@@ -56,6 +62,11 @@ public class AVLTest {
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.right
+        /*
+                THICC
+            Start     apple
+                THE
+         */
         strTree.insert("THE");
         assertEquals(true, "THE".compareTo(strTree.root().data()) < 0);
         assertEquals(true, "THE".compareTo("Start") > 0);
@@ -64,6 +75,11 @@ public class AVLTest {
         assertEquals(true, strTree.isBalanced());
 
         //Insert to root.left.left
+       /*
+                THICC
+            Start     apple
+      Answer     THE
+        */
         strTree.insert("Answer");
         assertEquals(true, "Answer".compareTo(strTree.root().data()) < 0);
         assertEquals(true, "Answer".compareTo("Start") < 0);
@@ -186,6 +202,13 @@ public class AVLTest {
         assertEquals(5, strTree.size());
         assertEquals(3, strTree.height());
         assertEquals("Answer", strTree.root().data());
+
+        //Delete Mid
+        /*
+                    Answer
+                 Ab        Answers
+                                Thicc
+         */
     }
     @Test
     void orderingTest() {
