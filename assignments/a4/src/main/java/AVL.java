@@ -383,11 +383,12 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             int flag = elem.compareTo(curr.data());
             if(flag < 0) {
                 // recurse: elem is smaller than curr.data
-                return deleteHelper(elem, curr.left());
+                deleteHelper(elem, curr.left());
+
             }
             if(flag > 0) {
                 //recurse: elem is bigger than curr.data
-                return deleteHelper(elem, curr.right());
+                deleteHelper(elem, curr.right());
             }
             if(flag == 0) {
                 //EXECUTE ORDER 66
@@ -449,14 +450,9 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             }
 
             //*Extracted
-            int lHeight = 0;
-            int rHeight = 0;
 
-            if(curr.hasLeft()) { lHeight = curr.left().height(); }
-            if(curr.hasRight()) { rHeight = curr.right().height(); }
-
-            curr.setHeight(Math.max(lHeight, rHeight) - 1);
-            curr.setSize(curr.size() - 1);
+            this.heightHelper(curr);
+            this.sizeHelper(curr);
             this.mkBalanced(curr);
         }
 

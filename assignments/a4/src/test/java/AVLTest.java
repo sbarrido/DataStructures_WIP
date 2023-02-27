@@ -110,8 +110,8 @@ public class AVLTest {
     void loadStr() {
         //Insert to root.right
         strTree.insert("THICC");
-        assertEquals(true, "THICC".compareTo(rootStr.data()) > 0);
-        assertEquals("THICC", strTree.root().right().data());
+        assertEquals(true, "THICC".compareTo(strTree.root().data()) > 0);
+        assertEquals("THICC", strTree.root().left().data());
         assertEquals(2, strTree.height());
         assertEquals(2, strTree.size());
         assertEquals(true, strTree.isBalanced());
@@ -119,7 +119,7 @@ public class AVLTest {
         //Insert to root.right.right
         //RotateL
         strTree.insert("apple");
-        assertEquals(true, "apple".compareTo(rootStr.data()) > 0);
+        assertEquals(true, "apple".compareTo(strTree.root().data()) > 0);
         assertEquals(true, "apple".compareTo("THICC") > 0);
         assertEquals(2, strTree.height());
         assertEquals(3, strTree.size());
@@ -209,12 +209,17 @@ public class AVLTest {
                  Ab        Answers
                                 Thicc
          */
+        strTree.delete("Answers");
+        assertEquals(4, strTree.size());
+        assertEquals(2, strTree.height());
+        assertEquals("THICC", strTree.root().right().data());
     }
     @Test
     void orderingTest() {
-        //  THICC
-        // Start Answer
-        //Ab
+        /*              Start
+                Answer          THICC
+            Ab     Answers  THE         apple
+         */
         loadStr();
         ArrayList<String> pre = (ArrayList<String>) strTree.preOrderList();
         ArrayList<String> in = (ArrayList<String>) strTree.inOrderList();
