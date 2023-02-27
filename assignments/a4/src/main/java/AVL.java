@@ -52,6 +52,9 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
     public void updateHeight() {
         this.height = this.heightHelper(this.root);
     }
+    public void updateSize() {
+        this.size = this.sizeHelper(this.root);
+    }
     private int heightHelper(BinaryNode<E> node) {
         int lHeight = 0;
         int rHeight = 0;
@@ -313,7 +316,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             this.insertHelper(elem, this.root);
         }
 
-        this.size = this.sizeHelper(this.root);
+        this.updateSize();
         this.updateHeight();
     }
     public void insertHelper(E elem, BinaryNode<E> curr) {
@@ -369,6 +372,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
         if(this.root != null) {
             target = this.deleteHelper(elem, this.root);
             this.updateHeight();
+            this.updateSize();
         }
         return target;
     }
@@ -414,6 +418,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
                         if(curr.hasRight()) { this.root = extractRightMost(curr.right()); }
 
                         updateHeight();
+                        updateSize();
                         this.height = this.root.height();
                     } else {
                         this.root = null;
@@ -456,15 +461,14 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
                         }
                     }
                 }
-                this.size--;
-                this.updateHeight();
+                this.heightHelper(curr);
+                this.sizeHelper(curr);
                 if(this.root != null) {
                     this.height = this.root.height();
                 }
             }
 
             //*Extracted
-
             this.heightHelper(curr);
             this.sizeHelper(curr);
             this.mkBalanced(curr);
