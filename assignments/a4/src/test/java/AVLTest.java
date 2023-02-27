@@ -106,6 +106,7 @@ public class AVLTest {
         assertEquals(3, strTree.height());
         assertEquals(7, strTree.size());
         assertEquals(true, strTree.isBalanced());
+
     }
     void loadStr() {
         //Insert to root.right
@@ -161,6 +162,45 @@ public class AVLTest {
         assertEquals(3, strTree.height());
         assertEquals(7, strTree.size());
         assertEquals(true, strTree.isBalanced());
+
+        intTree.insert(0);
+        assertEquals(1, intTree.size());
+        assertEquals(1, intTree.height());
+
+        intTree.insert(1);
+        assertEquals(2, intTree.size());
+        assertEquals(2, intTree.height());
+
+        /*
+            0
+               1     =>       1
+                  2      0        2
+         */
+        // Left Rotate
+        intTree.insert(2);
+        assertEquals(3, intTree.size());
+        assertEquals(2, intTree.height());
+
+        /*
+                    1
+              0         2
+                            3
+         */
+        intTree.insert(3);
+        assertEquals(4, intTree.size());
+        assertEquals(3, intTree.height());
+
+         /*
+                    1                             1
+              0         2           =>      0           3
+                            3                       2       4
+                                4
+         */
+        //Internal Left Rotate
+        intTree.insert(4);
+        assertEquals(5, intTree.size());
+        assertEquals(3, intTree.height());
+
     }
     @Test
     void searchTest() {

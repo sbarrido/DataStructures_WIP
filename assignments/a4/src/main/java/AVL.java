@@ -144,6 +144,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
      * Make sure you increment the RRotations.
     */
     public void rotateRight(BinaryNode<E> node){
+        BinaryNode<E> nodeDaddy = node.parent();
         BinaryNode<E> leftChild = node.left();
         BinaryNode<E> adoptedRightTree = leftChild.right();
 
@@ -154,6 +155,12 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             this.root = leftChild;
         } else {
             leftChild.setParent(node.parent());
+            int flag = leftChild.data().compareTo(nodeDaddy.data());
+            if(flag > 0) {
+                nodeDaddy.setRight(leftChild);
+            } else {
+                nodeDaddy.setRight(leftChild);
+            }
         }
 
         this.heightHelper(node);
@@ -176,6 +183,7 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Symmetrical to above.
      */
     public void rotateLeft(BinaryNode<E> node){
+        BinaryNode<E> nodeDaddy = node.parent();
         BinaryNode<E> rightChild = node.right();
         BinaryNode<E> adoptedLeftTree = rightChild.left();
 
@@ -185,7 +193,13 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
             rightChild.setParent(null);
             this.root = rightChild;
         } else {
-            rightChild.setParent(node.parent());
+            rightChild.setParent(nodeDaddy);
+            int flag = rightChild.data().compareTo(nodeDaddy.data());
+            if(flag > 0) {
+                nodeDaddy.setRight(rightChild);
+            } else {
+                nodeDaddy.setLeft(rightChild);
+            }
         }
 
         this.heightHelper(node);

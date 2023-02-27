@@ -40,6 +40,7 @@ public class SearchEngine {
 //        BufferedReader reader = new BufferedReader(new FileReader("dataset.txt"));
         String url;
         while((url = reader.readLine()) != null){
+            System.out.println("reading..." + url);
             Document doc = Jsoup.connect(url).get();
             String text = doc.body().text().toLowerCase();
             String[] words = text.split("\\s+"); // splits by whitespace
