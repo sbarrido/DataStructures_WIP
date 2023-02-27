@@ -200,19 +200,19 @@ public class AVLTest {
         //Delete Mid
             /*          Start
                 Answer          THICC
-            Ab     Answers
+            Ab     Answers    THE
          */
         strTree.delete("THICC");
         assertEquals(5, strTree.size());
         assertEquals(3, strTree.height());
         assertEquals("Start", strTree.root().data());
+        assertEquals("THE", strTree.root().right().data());
+
 
         //Delete Leaf
-        //Rotate Right
-        //Delete Leaf
-            /*          Start                   Answer
-                Answer              =>      Ab          Start
-            Ab     Answers                          Answers
+            /*          Start
+                Answer
+            Ab     Answers
          */
         strTree.delete("THE");
         assertEquals(4, strTree.size());
