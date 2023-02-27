@@ -109,9 +109,10 @@ public class AVLTest {
     }
     void loadStr() {
         //Insert to root.right
+
         strTree.insert("THICC");
         assertEquals(true, "THICC".compareTo(strTree.root().data()) > 0);
-        assertEquals("THICC", strTree.root().left().data());
+        assertEquals("THICC", strTree.root().right().data());
         assertEquals(2, strTree.height());
         assertEquals(2, strTree.size());
         assertEquals(true, strTree.isBalanced());
@@ -188,31 +189,35 @@ public class AVLTest {
         assertEquals(3, strTree.height());
 
         //Delete Leaf
+            /*          Start
+                Answer          THICC
+            Ab     Answers  THE
+         */
         strTree.delete("apple");
         assertEquals(6, strTree.size());
         assertEquals(3, strTree.height());
 
-        //Delete Leaf
-        //Rotate right
-        /*              Answer
-                   Ab           Start
-                            Answers   Thicc
+        //Delete Mid
+            /*          Start
+                Answer          THICC
+            Ab     Answers
          */
-        strTree.delete("THE");
+        strTree.delete("THICC");
         assertEquals(5, strTree.size());
         assertEquals(3, strTree.height());
-        assertEquals("Answer", strTree.root().data());
+        assertEquals("Start", strTree.root().data());
 
-        //Delete Mid
-        /*
-                    Answer
-                 Ab        Answers
-                                Thicc
+        //Delete Leaf
+        //Rotate Right
+        //Delete Leaf
+            /*          Start                   Answer
+                Answer              =>      Ab          Start
+            Ab     Answers                          Answers
          */
-        strTree.delete("Answers");
+        strTree.delete("THE");
         assertEquals(4, strTree.size());
-        assertEquals(2, strTree.height());
-        assertEquals("THICC", strTree.root().right().data());
+        assertEquals(3, strTree.height());
+        assertEquals("Start", strTree.root().right().data());
     }
     @Test
     void orderingTest() {

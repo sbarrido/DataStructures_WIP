@@ -71,7 +71,7 @@ public class BinaryNode<E extends Comparable<E>> implements TreePrinter.Printabl
         int leftHeight = (hasLeft()) ? left.height() : 0;
         int rightHeight = (hasRight()) ? right.height() : 0;
 
-        boolean balance = Math.abs(leftHeight - rightHeight) + 1 < 2;
+        boolean balance = Math.abs(leftHeight - rightHeight) < 2;
         return balance;
     }
     boolean hasLeft(){
