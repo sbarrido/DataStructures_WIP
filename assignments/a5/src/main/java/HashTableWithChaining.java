@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,7 +49,14 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     according to such. Additionally, it will set up the table according to the capacity.
      */
     public HashTableWithChaining(int capacity, double loadFactor) {
+        this.capacity = capacity;
+        this.loadFactor = loadFactor;
+        this.table = new ArrayList<>(this.capacity);
 
+        //Load Table
+        for(int i = 0; i < this.capacity; i++) {
+            this.table.add(new LinkedList<>());
+        }
     }
 
     // TODO:
@@ -58,7 +66,24 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     //  Resize when the size is > the loadFactor * capacity.
     //  Remember that multiple keys can exist at the same index.
     public void put(K key, V value) {
+        int index = hash(key);
+        LinkedList<Entry<K, V>> bin = this.table.get(index);
 
+        if(!bin.isEmpty()) {
+            Iterator<Entry<K, V>> binIter = bin.iterator();
+            while(binIter.hasNext()) {
+                Entry<K, V> item = binIter.next();
+                if(item.getKey().equals(key)) {
+                    item.setValue(value);
+                }
+            }
+        } else {
+            this.size++;
+            if(this.size > this.loadFactor * this.capacity) {
+                //RESIZE
+            }
+            bin.add(new Entry(key, value));
+        }
     }
 
     private boolean isPrime(int number) {
@@ -92,12 +117,41 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     //  Retrieves the value of a key in the table.
     //  Return null if not there.
     public V get(K key) {
-        return null;
+        V target = null;
+
+        int index = hash(key);
+        LinkedList<Entry<K, V>> bin = this.table.get(index);
+        if(!bin.isEmpty()) {
+            Iterator binIter = bin.iterator();
+
+            while(binIter.hasNext()) {
+                Entry<K, V> item = (Entry<K, V>) binIter.next();
+                if(item.getKey().equals(key)) {
+                    target = item.getValue();
+                    break;
+                }
+            }
+        }
+        return target;
     }
 
     // TODO: Searches the table to see if the key exists or not.
     public boolean containsKey(K key) {
-        return false;
+        boolean found = false;
+
+        int index = hash(key);
+        LinkedList<Entry<K, V>> bin = this.table.get(index);
+        if(!bin.isEmpty()) {
+            Iterator binIterator = bin.iterator();
+            while(binIterator.hasNext()) {
+                Entry<K, V> item = (Entry<K, V>) binIterator.next();
+                if(item.getKey().equals(key)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        return found;
     }
 
     // TODO:
@@ -124,7 +178,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
 
     // TODO: Calculate the absolute hash of the key. Do not overthink this.
     private int hash(K key) {
-        return 0;
+        return key.hashCode();
     }
 
     @Override
