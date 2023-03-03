@@ -12,7 +12,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     private List<LinkedList<Entry<K, V>>> table;  // hash table
 
     // Entry class to hold key-value pairs
-    private class Entry<K, V> {
+    public class Entry<K, V> {
         private K key;
         private V value;
 
@@ -44,7 +44,6 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     }
 
     /*
-    TODO:
     This constructor takes a capacity and loadFactor, and sets those variables + relevant variables
     according to such. Additionally, it will set up the table according to the capacity.
      */
@@ -59,7 +58,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
         }
     }
 
-    // TODO:
+    //
     //  Put a key, value pair into the table.
     //  If the key already exists, update it with the new value.
     //  If there is no key at that index, add it into the table.
@@ -111,21 +110,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
             number++;
         }
     }
-    private int prevPrime(int number) {
-        for(int i = number - 1; i >= 2; i--) {
-            boolean prime = true;
-            for(int j = 2; j <= Math.sqrt(i); j++) {
-                if(i % j == 0) {
-                    prime = false;
-                    break;
-                }
-            }
-            if(prime == true) {
-                return i;
-            }
-        }
-        return 2;
-    }
+
     // TODO:
     //  Set the capacity to the nextPrime of the capacity doubled.
     //  Calculate the previousPrime and set up the new table with the old tables'
@@ -166,6 +151,9 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
         V target = null;
 
         int index = hash(key);
+        if(index > this.capacity) {
+            return null;
+        }
         LinkedList<Entry<K, V>> bin = this.table.get(index);
         if(!bin.isEmpty()) {
             Iterator binIter = bin.iterator();
@@ -204,7 +192,19 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     //  Remove the entry under that key. Return true.
     //  If there is no key, return false.
     public boolean remove(K key) {
-        return false;
+        boolean removed = false;
+        int index = this.hash(key) % this.capacity;
+        LinkedList bin = this.table.get(index);
+        Iterator<Entry<K, V>> binIter = bin.iterator();
+
+        while(binIter.hasNext()) {
+            Entry<K, V> item = binIter.next();
+            if(item.getKey().equals(key)) {
+                removed = true;
+                bin.remove(item);
+            }
+        }
+        return removed;
     }
 
     public void clear() {
@@ -222,9 +222,15 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
         return size;
     }
     public int capacity() { return this.capacity; }
+    public List<LinkedList<Entry<K, V>>> table() { return this.table; }
+
     // TODO: Calculate the absolute hash of the key. Do not overthink this.
     private int hash(K key) {
-        return key.hashCode();
+        int hash = key.hashCode();
+        if(hash < 0) {
+            hash *= -1;
+        }
+        return hash;
     }
     @Override
     public String toString() {
