@@ -113,7 +113,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                     //Retrieve Entry at new index
                     index = this.getNextIndex(key, collCount);
                     entry = this.table[index];
-
+                    if(entry == null) { break; }
                     //calculated nextIndex must not be same as stored firstIndex
                     //results in loop, throw runtime exception
                     if(index == firstIndex) {
@@ -128,6 +128,11 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 this.table[index] = new Entry(key, value);
                 this.size++;
             }
+        }
+
+        //Resize if necessary
+        if(this.size > this.loadFactor * this.capacity) {
+            this.resize();
         }
     }
 
@@ -222,6 +227,28 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     //  Calculate the previousPrime and set up the new table with the old tables'
     //  contents now hashed to the new.
     private void resize() {
+        this.capacity = nextPrime(this.capacity * 2);
+
+        Entry<K, V>[] tmp = new Entry[this.capacity];
+        for(int i = 0; i < this.table.length; i++) {
+            Entry<K, V> item = this.table[i];
+            if(item != null) {
+                int index = this.hash(item.getKey()) % this.capacity;
+                int collCount = 0;
+
+                boolean empty = tmp[index] == null;
+                while(!empty) {
+                    collCount++;
+                    index = this.getNextIndex(item.getKey(), collCount);
+
+                    empty = tmp[index] == null;
+                }
+
+                tmp[index] = item;
+            }
+        }
+
+        this.table = tmp;
     }
 
     @Override
