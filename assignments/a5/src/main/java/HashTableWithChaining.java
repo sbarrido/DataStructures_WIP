@@ -221,7 +221,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     public int size() {
         return size;
     }
-
+    public int capacity() { return this.capacity; }
     // TODO: Calculate the absolute hash of the key. Do not overthink this.
     private int hash(K key) {
         return key.hashCode();

@@ -12,4 +12,10 @@ public class HTCTest {
     void initTable() {
         chain = new HashTableWithChaining<>();
     }
+
+    @Test
+    void initTest() {
+        assertEquals(0, chain.size());
+        assertEquals(11, chain.capacity());
+    }
 }
