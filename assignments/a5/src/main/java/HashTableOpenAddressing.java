@@ -14,7 +14,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     private Entry<K, V>[] table;
 
     public HashTableOpenAddressing() {
-        this(DOUBLEHASHING, 11, 0.75);  // default initial capacity of 10
+        this(DOUBLEHASHING, 11, 0.75);  // default initial capacity of 11
     }
 
     public HashTableOpenAddressing(int mode) {
@@ -26,13 +26,21 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     }
 
     /*
-    TODO:
     This constructor takes a mode, capacity, loadFactor, and sets those variables + relevant variables
     according to such. Additionally, it will set up the table according to the capacity.
     If the mode is DOUBLEHASHING, please calculate the previousPrime and set it.
      */
     public HashTableOpenAddressing(int mode, int capacity, double loadFactor) {
+        this.size = 0;
+        this.mode = mode;
+        this.capacity = capacity;
+        this.loadFactor = loadFactor;
 
+        if(this.mode == DOUBLEHASHING) {
+            this.previousPrime = this.previousPrime(this.capacity);
+        }
+
+        this.table = new Entry[this.capacity];
     }
 
     private int previousPrime(int number) {
@@ -48,13 +56,28 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     // TODO:
     //  second hash should be prevPrime - (key % prevPrime)...shouldn't be negative
     private int hash2(K key) {
-        return 0;
+        return this.previousPrime - (hash(key) % this.previousPrime);
     }
 
 
     // TODO: gets the next index given the index and the offset. Please take into account the mode.
-    private int getNextIndex(K key, int offset) {
-        return 0;
+    private int getNextIndex(K key, int collCount) {
+        int index = hash(key) % this.capacity;
+        switch(this.mode) {
+            case 1:
+                //Linear Probe
+                index += collCount;
+                break;
+            case 2:
+                //Quad probe
+                index += (collCount * collCount);
+                break;
+            case 3:
+                //Double Hash
+                index += (collCount * hash2(key));
+                break;
+        }
+        return index;
     }
 
     // TODO:
@@ -62,7 +85,50 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     //  If the key already exists/inactive, override it. Else, put it into the table.
     //  Throw a RuntimeException if there is an infinite loops.
     public void put(K key, V value) {
+        int firstIndex = hash(key) % this.capacity;
+        Entry<K, V> entry = this.table[firstIndex];
 
+        if(entry == null || !entry.isActive) {
+            this.table[firstIndex] = new Entry(key, value);
+            this.size++;
+        } else if(entry.getKey().equals(key)) {
+            entry.setValue(value);
+            this.table[firstIndex] = entry;
+        } else {
+            int collCount = 0;
+            int index = firstIndex;
+            boolean foundKey = false;
+            while(entry.isActive) {
+                collCount++;
+
+                //While looping check if new entry has same key
+                //if true, update value and break loop
+                if(entry.getKey().equals(key)) {
+                    entry.setValue(value);
+                    this.table[index] = entry;
+                    foundKey = true;
+                    break;
+                } else {
+                    //Calculate new index to check based on collCount / mode
+                    //Retrieve Entry at new index
+                    index = this.getNextIndex(key, collCount);
+                    entry = this.table[index];
+
+                    //calculated nextIndex must not be same as stored firstIndex
+                    //results in loop, throw runtime exception
+                    if(index == firstIndex) {
+                        throw new RuntimeException();
+                    }
+                }
+            }
+
+            //Exited while loop
+            //if Key was not found, then add entry at found index
+            if(!foundKey) {
+                this.table[index] = new Entry(key, value);
+                this.size++;
+            }
+        }
     }
 
     // TODO:
@@ -70,7 +136,30 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     //  If there is an infinite loop, throw a RuntimeException.
     //  Return null if not there.
     public V get(K key) {
-        return null;
+        int index = hash(key) % this.capacity;
+        Entry<K, V> entry = this.table[index];
+        V target = null;
+
+        int collCount = 0;
+        while(entry != null) {
+            //Entry.key found, retrieve value
+            //break loop
+            if(entry.getKey().equals(key)) {
+                target = entry.getValue();
+                break;
+            } else {
+                //Check new index based on collCount
+                collCount++;
+                int probeIndex = this.getNextIndex(key, collCount);
+                entry = this.table[probeIndex];
+
+                //Check for looped index
+                if(probeIndex == index) {
+                    throw new RuntimeException();
+                }
+            }
+        }
+        return target;
     }
 
     // TODO: Searches the table to see if the key exists or not.
@@ -89,6 +178,12 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     public int size() {
         return size;
     }
+    public int capacity() {
+        return this.capacity;
+    }
+    public Entry[] getTable() {
+        return this.table;
+    }
 
     public boolean isEmpty() {
         return size == 0;
@@ -97,7 +192,10 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     // TODO:
     //  Calculate the absolute hash of the key. Do not overthink this.
     private int hash(K key) {
-        return 0;
+        int hash = key.hashCode();
+        if(hash < 0 ) { hash *= -1; }
+
+        return hash;
     }
 
 
@@ -148,7 +246,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         return sb.toString();
     }
 
-    private class Entry<K, V> {
+    public class Entry<K, V> {
         private K key;
         private V value;
 
