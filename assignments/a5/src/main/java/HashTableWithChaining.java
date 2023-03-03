@@ -85,7 +85,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
         //Add new entry
         //modify size
         if(!found) {
-            bin.add(new Entry(key, value));
+            bin.set(index, new Entry(key, value));
             this.size++;
             if(this.size > this.loadFactor * this.capacity) {
                 this.resize();
@@ -136,7 +136,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
 
                 //New index based on 2x prime capacity
                 int index = this.hash(item.getKey()) % this.capacity;
-                tmp.get(index).add(item);
+                tmp.get(index).set(index, item);
             }
         }
 
