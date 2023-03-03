@@ -35,7 +35,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     }
 
     public HashTableWithChaining() {
-        this(11, 0.75);  // default initial capacity of 10
+        this(11, 0.75);  // default initial capacity of 11
 
     }
 
@@ -55,7 +55,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
 
         //Load Table
         for(int i = 0; i < this.capacity; i++) {
-            this.table.add(new LinkedList<>());
+            this.table.add(new LinkedList<Entry<K, V>>());
         }
     }
 
@@ -66,23 +66,31 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     //  Resize when the size is > the loadFactor * capacity.
     //  Remember that multiple keys can exist at the same index.
     public void put(K key, V value) {
-        int index = hash(key);
+        int index = hash(key) % this.capacity;
         LinkedList<Entry<K, V>> bin = this.table.get(index);
 
+        //Search target Bin for existing
+        boolean found = false;
         if(!bin.isEmpty()) {
             Iterator<Entry<K, V>> binIter = bin.iterator();
             while(binIter.hasNext()) {
                 Entry<K, V> item = binIter.next();
                 if(item.getKey().equals(key)) {
                     item.setValue(value);
+                    found = true;
                 }
             }
-        } else {
+        }
+
+        //Not found flag
+        //Add new entry
+        //modify size
+        if(!found) {
+            bin.add(new Entry(key, value));
             this.size++;
             if(this.size > this.loadFactor * this.capacity) {
-                //RESIZE
+                this.resize();
             }
-            bin.add(new Entry(key, value));
         }
     }
 
@@ -103,13 +111,51 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
             number++;
         }
     }
-
+    private int prevPrime(int number) {
+        for(int i = number - 1; i >= 2; i--) {
+            boolean prime = true;
+            for(int j = 2; j <= Math.sqrt(i); j++) {
+                if(i % j == 0) {
+                    prime = false;
+                    break;
+                }
+            }
+            if(prime == true) {
+                return i;
+            }
+        }
+        return 2;
+    }
     // TODO:
     //  Set the capacity to the nextPrime of the capacity doubled.
     //  Calculate the previousPrime and set up the new table with the old tables'
     //  contents now hashed to the new.
     private void resize() {
         //find the next prime number twice that of capacity...
+        this.capacity = nextPrime(this.capacity * 2);
+
+        //Resized ArrayList
+        ArrayList<LinkedList<Entry<K, V>>> tmp = new ArrayList<>(this.capacity);
+        for(int i = 0; i < this.capacity; i++) {
+            LinkedList<Entry<K, V>> bin = new LinkedList<>();
+            tmp.add(bin);
+        }
+
+        //Load from previous
+        for(int i = 0; i < this.table.size(); i++) {
+            LinkedList<Entry<K, V>> bin = this.table.get(i);
+            Iterator<Entry<K, V>> binIter = bin.iterator();
+
+            while(binIter.hasNext()) {
+                Entry<K, V> item = binIter.next();
+
+                //New index based on 2x prime capacity
+                int index = this.hash(item.getKey()) % this.capacity;
+                tmp.get(index).add(item);
+            }
+        }
+
+        this.table = tmp;
     }
 
 
@@ -180,7 +226,6 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     private int hash(K key) {
         return key.hashCode();
     }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
