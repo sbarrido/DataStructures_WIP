@@ -197,6 +197,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 entry.isActive = false;
                 this.table[index] = entry;
                 removed = true;
+                this.size--;
             } else {
                 int collCount = 0;
                 while(entry != null) {
@@ -208,6 +209,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                         entry.isActive = false;
                         this.table[probeIndex] = entry;
                         removed = true;
+                        this.size--;
                         break;
                     }
 
