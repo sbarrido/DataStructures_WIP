@@ -142,4 +142,64 @@ public class HTOATest {
         assertEquals(23, tableQuad.getTable()[9].getKey());
         assertEquals("updated second", tableQuad.getTable()[9].getValue());
     }
+
+    @Test
+    void getTest() {
+        //Init Tables
+        //DoubleFlavor this.capacity = 17, load = 0.5
+        for(int i = 0; i < 7; i++) {
+            tableLine.put(i, "woof");
+            tableQuad.put(i, "rawr");
+            tableDoubleFlavor.put(i, "POW");
+        }
+
+        //--------Line Tests---------------
+        //null
+        assertEquals(null, tableLine.get(10));
+        //out of bounds
+        assertEquals(null, tableLine.get(14));
+        //exists
+        assertEquals("woof", tableLine.get(2));
+        //update
+        tableLine.put(3, "meow");
+        assertEquals(3, tableLine.getTable()[3].getKey());
+        assertEquals("meow", tableLine.getTable()[3].getValue());
+        assertEquals("meow", tableLine.get(3));
+        assertEquals("woof", tableLine.get(2));
+
+        //Collision Test get
+        assertEquals(7, tableLine.size());
+        assertEquals(11, tableLine.capacity());
+
+        tableLine.put(11, "fish sound");
+        assertEquals(8, tableLine.size());
+        assertEquals(11, tableLine.capacity());
+        assertEquals(11, tableLine.getTable()[7].getKey());
+        assertEquals("fish sound", tableLine.get(11));
+        //---- end line get tests -------
+
+        // ------ begin quad get Tests------
+        //null
+        assertEquals(null, tableQuad.get(8));
+        //out of bounds
+        assertEquals(null, tableQuad.get(100));
+        //exists
+        assertEquals("rawr", tableQuad.get(4));
+
+        //Update
+        tableQuad.put(2, "pickles");
+        assertEquals("pickles", tableQuad.get(2));
+
+        //Quad Collision
+        // init index : 0 collide
+        // check 1: collid
+        // check 4: collide
+        // check 9: home
+        tableQuad.put(23, "collide");
+        assertEquals("rawr", tableQuad.get(0));
+        assertEquals("rawr", tableQuad.get(1));
+        assertEquals("rawr", tableQuad.get(4));
+        assertEquals("collide", tableQuad.get(23));
+        /// -------- end quad get Tests
+    }
 }
