@@ -114,7 +114,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 } else {
                     //Calculate new index to check based on collCount / mode
                     //Retrieve Entry at new index
-                    index = this.getNextIndex(key, collCount);
+                    index = this.getNextIndex(key, collCount) % this.capacity;
                     while(index >= this.capacity) { index = index - this.capacity; }
 
                     entry = this.table[index];
