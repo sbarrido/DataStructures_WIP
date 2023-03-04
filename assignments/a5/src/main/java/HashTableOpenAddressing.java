@@ -53,14 +53,14 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     }
 
 
-    // TODO:
+    //
     //  second hash should be prevPrime - (key % prevPrime)...shouldn't be negative
     private int hash2(K key) {
         return this.previousPrime - (hash(key) % this.previousPrime);
     }
 
 
-    // TODO: gets the next index given the index and the offset. Please take into account the mode.
+    //  gets the next index given the index and the offset. Please take into account the mode.
     private int getNextIndex(K key, int collCount) {
         int index = hash(key) % this.capacity;
         switch(this.mode) {
@@ -80,7 +80,6 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         return index;
     }
 
-    // TODO:
     //  Put a key, value pair into the table.
     //  If the key already exists/inactive, override it. Else, put it into the table.
     //  Throw a RuntimeException if there is an infinite loops.
@@ -141,7 +140,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         }
     }
 
-    // TODO:
+    //
     //  Retrieves the value of a key in the table.
     //  If there is an infinite loop, throw a RuntimeException.
     //  Return null if not there.
@@ -160,7 +159,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
             } else {
                 //Check new index based on collCount
                 collCount++;
-                int probeIndex = this.getNextIndex(key, collCount);
+                int probeIndex = this.getNextIndex(key, collCount) % this.capacity;
                 while(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
                 entry = this.table[probeIndex];
 
@@ -173,9 +172,16 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         return target;
     }
 
-    // TODO: Searches the table to see if the key exists or not.
+    //  Searches the table to see if the key exists or not.
     public boolean containsKey(K key) {
-        return false;
+        boolean found = false;
+        for(Entry<K, V> e : this.table) {
+            if(e.getKey().equals(key)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
     // TODO:
@@ -183,7 +189,35 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     //  If there is no key, return false.
     //  If there's an infinite loop, throw a RuntimeException.
     public boolean remove(K key) {
-        return false;
+        boolean removed = false;
+        int index = this.hash(key) % this.capacity();
+        Entry<K, V> entry = this.table[index];
+        if(entry != null) {
+            if(entry.getKey().equals(key)) {
+                entry.isActive = false;
+                this.table[index] = entry;
+                removed = true;
+            } else {
+                int collCount = 0;
+                while(entry != null) {
+                    int probeIndex = this.getNextIndex(key, collCount) % this.capacity;
+                    if(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
+                    entry = this.table[probeIndex];
+
+                    if(entry.getKey().equals(key)) {
+                        entry.isActive = false;
+                        this.table[probeIndex] = entry;
+                        removed = true;
+                        break;
+                    }
+
+                    if(probeIndex == index) {
+                        throw new RuntimeException();
+                    }
+                }
+            }
+        }
+        return removed;
     }
 
     public int size() {
@@ -200,7 +234,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         return size == 0;
     }
 
-    // TODO:
+    //
     //  Calculate the absolute hash of the key. Do not overthink this.
     private int hash(K key) {
         int hash = key.hashCode();
@@ -228,7 +262,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         }
     }
 
-    // TODO:
+    //
     //  Set the capacity to the nextPrime of the capacity doubled.
     //  Calculate the previousPrime and set up the new table with the old tables'
     //  contents now hashed to the new.
