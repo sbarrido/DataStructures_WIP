@@ -161,6 +161,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 //Check new index based on collCount
                 collCount++;
                 int probeIndex = this.getNextIndex(key, collCount);
+                while(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
                 entry = this.table[probeIndex];
 
                 //Check for looped index
@@ -318,7 +319,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         System.out.println(hashTable);
         for (int i = 0; i < 280; i += 10) {
             hashTable.put(i, i);
-            //hashTable.remove(0);
+            hashTable.remove(0);
             System.out.println(hashTable.get(i));
         }
     }
