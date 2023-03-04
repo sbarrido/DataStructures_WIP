@@ -2,6 +2,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HTOATest {
     HashTableOpenAddressing tableDouble;
@@ -203,6 +204,26 @@ public class HTOATest {
         assertEquals("rawr", tableQuad.get(1));
         assertEquals("rawr", tableQuad.get(4));
         assertEquals("collide", tableQuad.get(23));
-        /// -------- end quad get Tests
+        /// -------- end quad get Tests---------
+
+        //----------Begin double hash Test---------
+        //Null
+        assertEquals(null, tableDoubleFlavor.get(8));
+        //out of bounds
+        assertEquals(null, tableDoubleFlavor.get(32487329));
+        //exists
+        assertEquals("POW", tableDoubleFlavor.get(2));
+
+        //update
+        tableDoubleFlavor.put(2, "boom");
+        assertEquals("boom", tableDoubleFlavor.get(2));
+        //Double Hash Collision
+        tableDoubleFlavor.put(18, "collide");
+        assertEquals("collide", tableDoubleFlavor.get(18));
+
+        //Double Hash runtime
+        Exception ex = assertThrows(RuntimeException.class, () ->  {
+            tableDoubleFlavor.put(17, "runtime");
+        });
     }
 }

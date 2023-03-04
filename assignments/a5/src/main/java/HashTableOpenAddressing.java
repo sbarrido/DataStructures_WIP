@@ -77,7 +77,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 index += (collCount * hash2(key));
                 break;
         }
-        return index;
+        return index % this.capacity;
     }
 
     //  Put a key, value pair into the table.
@@ -113,11 +113,11 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 } else {
                     //Calculate new index to check based on collCount / mode
                     //Retrieve Entry at new index
-                    index = this.getNextIndex(key, collCount) % this.capacity;
+                    index = this.getNextIndex(key, collCount);
                     while(index >= this.capacity) { index = index - this.capacity; }
 
                     entry = this.table[index];
-                    if(entry == null) { break; }
+                    if(entry == null || !entry.isActive) { break; }
                     //calculated nextIndex must not be same as stored firstIndex
                     //results in loop, throw runtime exception
                     if(index == firstIndex) {
@@ -159,7 +159,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
             } else {
                 //Check new index based on collCount
                 collCount++;
-                int probeIndex = this.getNextIndex(key, collCount) % this.capacity;
+                int probeIndex = this.getNextIndex(key, collCount);
                 while(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
                 entry = this.table[probeIndex];
 
@@ -176,9 +176,11 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
     public boolean containsKey(K key) {
         boolean found = false;
         for(Entry<K, V> e : this.table) {
-            if(e.getKey().equals(key)) {
-                found = true;
-                break;
+            if(e != null && e.isActive) {
+                if(e.getKey().equals(key)) {
+                    found = true;
+                    break;
+                }
             }
         }
         return found;
@@ -201,8 +203,8 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
             } else {
                 int collCount = 0;
                 while(entry != null) {
-                    int probeIndex = this.getNextIndex(key, collCount) % this.capacity;
-                    if(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
+                    int probeIndex = this.getNextIndex(key, collCount);
+                    while(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
                     entry = this.table[probeIndex];
 
                     if(entry.getKey().equals(key)) {
@@ -281,7 +283,7 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 boolean empty = tmp[index] == null;
                 while(!empty) {
                     collCount++;
-                    index = this.getNextIndex(item.getKey(), collCount);
+                    index = this.getNextIndex(item.getKey(), collCount) % this.capacity;
 
                     empty = tmp[index] == null;
                 }
@@ -355,7 +357,6 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         System.out.println(hashTable);
         for (int i = 0; i < 280; i += 10) {
             hashTable.put(i, i);
-            hashTable.remove(0);
             System.out.println(hashTable.get(i));
         }
     }
