@@ -100,6 +100,9 @@ public class HTOATest {
         assertEquals(11, tableLine.capacity());
         assertEquals(22, tableLine.getTable()[2].getKey());
         assertEquals("Updated", tableLine.getTable()[2].getValue());
+
+        tableLine.put(-1, "cat");
+
     }
     @Test
     void putQuadTest() {
