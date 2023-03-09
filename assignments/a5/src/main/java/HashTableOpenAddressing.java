@@ -87,9 +87,6 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
         int firstIndex = hash(key) % this.capacity;
         Entry<K, V> entry = this.table[firstIndex];
 
-        while(firstIndex >= this.capacity) {
-            firstIndex = this.capacity - firstIndex;
-        }
         if(entry == null || !entry.isActive) {
             this.table[firstIndex] = new Entry(key, value);
             this.size++;
@@ -114,7 +111,6 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                     //Calculate new index to check based on collCount / mode
                     //Retrieve Entry at new index
                     index = this.getNextIndex(key, collCount);
-                    while(index >= this.capacity) { index = index - this.capacity; }
 
                     entry = this.table[index];
                     if(entry == null || !entry.isActive) { break; }
@@ -160,7 +156,6 @@ public class HashTableOpenAddressing<K, V> extends Dictionary<K,V>{
                 //Check new index based on collCount
                 collCount++;
                 int probeIndex = this.getNextIndex(key, collCount);
-                while(probeIndex >= this.capacity) { probeIndex = probeIndex - this.capacity; }
                 entry = this.table[probeIndex];
 
                 //Check for looped index

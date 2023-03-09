@@ -11,16 +11,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HTCTest {
     // TODO: accuracy tests
     HashTableWithChaining chain;
+    HashTableWithChaining chain2;
+    HashTableWithChaining chain3;
 
     @BeforeEach
     void initTable() {
         chain = new HashTableWithChaining<>();
+        chain2 = new HashTableWithChaining(17);
+        chain3 = new HashTableWithChaining(7, 0.5);
     }
 
     @Test
     void initTest() {
         assertEquals(0, chain.size());
         assertEquals(11, chain.capacity());
+        assertEquals(0, chain2.size());
+        assertEquals(17, chain2.capacity());
+        assertEquals(0, chain3.size());
+        assertEquals(7, chain3.capacity());
     }
     @Test
     void putTest() {
@@ -120,6 +128,14 @@ public class HTCTest {
         //resized
         assertEquals("bubble", chain.get(0));
         assertEquals("aaaaaaa", chain.get(8));
+
+        //Chaining
+        chain.put(23, "YUH");
+        List<LinkedList<HashTableWithChaining.Entry>> table = chain.table();
+        assertEquals("YUH", chain.get(23));
+        assertEquals("bubble", table.get(0).get(0).getValue());
+        assertEquals("YUH", table.get(0).get(1).getValue());
+
     }
     @Test
     void removeTest() {

@@ -214,7 +214,7 @@ public class HTOATest {
         //exists
         assertEquals("POW", tableDoubleFlavor.get(2));
 
-        //update
+        //update(
         tableDoubleFlavor.put(2, "boom");
         assertEquals("boom", tableDoubleFlavor.get(2));
         //Double Hash Collision

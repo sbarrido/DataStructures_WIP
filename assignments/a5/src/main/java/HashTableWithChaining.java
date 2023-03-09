@@ -15,6 +15,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     public class Entry<K, V> {
         private K key;
         private V value;
+        private boolean isActive;
 
         public Entry(K key, V value) {
             this.key = key;
@@ -31,6 +32,13 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
 
         public void setValue(V value) {
             this.value = value;
+        }
+        public boolean getActive() {
+            return isActive;
+        }
+
+        public void setActive(boolean active) {
+            isActive = active;
         }
     }
 
@@ -65,7 +73,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     //  Resize when the size is > the loadFactor * capacity.
     //  Remember that multiple keys can exist at the same index.
     public void put(K key, V value) {
-        int index = hash(key) % this.capacity;
+        int index = this.hash(key) % this.capacity;
         LinkedList<Entry<K, V>> bin = this.table.get(index);
 
         //Search target Bin for existing
@@ -77,6 +85,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
                 if(item.getKey().equals(key)) {
                     item.setValue(value);
                     found = true;
+                    break;
                 }
             }
         }
@@ -150,10 +159,8 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
     public V get(K key) {
         V target = null;
 
-        int index = hash(key);
-        if(index > this.capacity) {
-            return null;
-        }
+        int index = this.hash(key) % this.capacity;
+
         LinkedList<Entry<K, V>> bin = this.table.get(index);
         if(!bin.isEmpty()) {
             Iterator binIter = bin.iterator();
@@ -202,6 +209,7 @@ public class HashTableWithChaining<K, V> extends Dictionary<K,V>{
             if(item.getKey().equals(key)) {
                 removed = true;
                 bin.remove(item);
+                break;
             }
         }
         return removed;
