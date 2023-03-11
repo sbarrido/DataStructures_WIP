@@ -245,8 +245,52 @@ public class AVL<E extends Comparable<E>> implements Tree<E>{
       * Hint: rotations!!!
     */
     public void mkBalanced(BinaryNode<E> node){
-        possibleRotateLeft(node);
-        possibleRotateRight(node);
+        int nodeLeftHeight = 0;
+        int nodeRightHeight = 0;
+        if(node.hasLeft()) { nodeLeftHeight = node.left().height(); }
+        if(node.hasRight()) { nodeRightHeight = node.right().height(); }
+
+        int balanceNode = nodeLeftHeight - nodeRightHeight;
+        boolean balanced = Math.abs(balanceNode) < 2;
+
+        //Unbalanced
+        if(!balanced) {
+            if(balanceNode > 0) {
+                //Check Left
+                int leftHeight = 0;
+                int rightHeight = 0;
+                if(node.left().hasLeft()) {
+                    leftHeight = node.left().left().height();
+                }
+                if(node.left().hasRight()) {
+                    rightHeight = node.left().right().height();
+                }
+
+                if(leftHeight - rightHeight > 0) {
+                    possibleRotateRight(node);
+                } else {
+                    possibleRotateLeft(node.left());
+                    possibleRotateRight(node);
+                }
+            } else {
+                //check right
+                int leftHeight = 0;
+                int rightHeight =0;
+                if(node.right().hasLeft()) {
+                    leftHeight = node.right().left().height();
+                }
+                if(node.right().hasRight()) {
+                    rightHeight = node.right().right().height();
+                }
+
+                if(rightHeight - leftHeight > 0) {
+                    possibleRotateLeft(node);
+                } else {
+                    possibleRotateRight(node.right());
+                    possibleRotateLeft(node);
+                }
+            }
+        }
     }
 
 
