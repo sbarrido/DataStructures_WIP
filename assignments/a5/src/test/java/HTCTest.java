@@ -158,4 +158,23 @@ public class HTCTest {
 
         assertFalse(found);
     }
+    @Test
+    void containsKeyTest() {
+        assertFalse(chain.containsKey(0));
+        chain.put(0, "first");
+        assertTrue(chain.containsKey(0));
+
+        assertFalse(chain.containsKey(10));
+        chain.put(10, "second");
+        assertTrue(chain.containsKey(10));
+
+        assertFalse(chain.containsKey(3));
+        chain.put(3, "yuh");
+        assertTrue(chain.containsKey(3));
+        for(int i = 2; i < 20; i *= 2) {
+            chain.put(i, i);
+        }
+        //contains after resizing
+        assertTrue(chain.containsKey(10));
+    }
 }
