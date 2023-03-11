@@ -15,6 +15,14 @@ public class SearchEngine {
     // TODO: mode 5 = Openaddressing mode 6 = Chaining; build
     public SearchEngine(int mode) throws IOException {
         this.mode = mode;
+
+        if(this.mode == 5) {
+            nodeTable = new HashTableOpenAddressing<>();
+        } else {
+            nodeTable = new HashTableWithChaining<>();
+        }
+
+        this.buildList();
     }
 
     public Dictionary<String, Node> getNodeTree(){
@@ -35,8 +43,18 @@ public class SearchEngine {
             String[] words = text.split("\\s+"); // splits by whitespace
             int count = 0;
             for (String word : words) {
-                // TODO:
+                if(nodeTable.containsKey(word)) {
+                    Node target = nodeTable.get(word);
 
+                    if(!target.getReferences().contains(url)) {
+                        target.insertReference(url);
+                    }
+                } else {
+                    Node newNode = new Node(word);
+                    newNode.insertReference(url);
+
+                    nodeTable.put(word, newNode);
+                }
             }
         }
         reader.close();
@@ -46,7 +64,9 @@ public class SearchEngine {
     // TODO: return the results from one term
     public ArrayList<String> search(String term) {
         System.out.println("Searching for " + term + " using data structure mode " + mode + "...");
-        return new ArrayList<>();
+        Node target = nodeTable.get(term);
+
+        return target.getReferences();
     }
 
     public static void main(String[] args) throws IOException{
