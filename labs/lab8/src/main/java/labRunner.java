@@ -28,8 +28,16 @@ public class labRunner {
      * @return the sorted array
      */
     public int[] insertionSort(int[] arr) {
-        //TODO
-        return null;
+        for(int i = 1; i < arr.length; i++) {
+            int j = i;
+            int curr = arr[j];
+
+            while(j > 0 && arr[j - 1] > curr) {
+                swap(arr, j - 1, j);
+                j -= 1;
+            }
+        }
+        return arr;
     }
 
     /**
@@ -46,7 +54,11 @@ public class labRunner {
      * @param high ending index
      */
     public void quickSort(int[] arr, int low, int high) {
-        //TODO
+        if(low < high) {
+            int partIndex = partition(arr, low, high);
+            quickSort(arr, low, partIndex - 1);
+            quickSort(arr, partIndex + 1, high);
+        }
     }
 
     /**
@@ -63,7 +75,16 @@ public class labRunner {
      * @return the correct index where you should partition the array
      */
     public int partition(int[] arr, int low, int high) {
-        //TODO
-        return 0;
+        int pivot = arr[high];
+        int i = low - 1;
+        for(int j = low; j <= high -1; j++) {
+            if(arr[j] < pivot) {
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, i+1, high);
+
+        return i + 1;
     }
 }
